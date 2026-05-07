@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tyroo CJ · Pitch Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PptxGenJS/3.12.0/pptxgen.bundle.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#214295;--teal:#025450;--orange:#F97316;--burg:#6E1B35;
+  --sky:#A6DDEE;--cream:#FDBBA0;--white:#FFFFFF;--offwhite:#F8F9FC;
+  --border:#E2E8F0;--text:#1A2035;--muted:#64748B;
+}
+body{font-family:'Outfit',Arial,sans-serif;background:var(--offwhite);color:var(--text);min-height:100vh;}
+nav{background:var(--white);border-bottom:2px solid var(--blue);display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 1px 12px rgba(33,66,149,.08);}
+.nav-logo{display:flex;align-items:center;gap:.5rem;}
+.nav-logo-sub{font-size:.72rem;color:var(--muted);}
+.nav-badge{font-size:.68rem;font-weight:600;color:var(--teal);border:1.5px solid var(--teal);padding:.2rem .7rem;border-radius:99px;letter-spacing:.06em;text-transform:uppercase;}
+.hero{background:linear-gradient(135deg,var(--blue) 0%,#1a3580 55%,var(--teal) 100%);color:var(--white);text-align:center;padding:4.5rem 1.5rem 3.5rem;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;bottom:-80px;right:-80px;width:360px;height:360px;border-radius:50%;border:40px solid rgba(255,255,255,.05);pointer-events:none;}
+.hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:210px;height:210px;border-radius:50%;border:28px solid rgba(255,255,255,.04);pointer-events:none;}
+.hero-eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--cream);margin-bottom:1rem;}
+.hero h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:800;line-height:1.1;margin-bottom:1rem;}
+.hero h1 span{color:var(--cream);}
+.hero p{font-size:.97rem;opacity:.82;max-width:460px;margin:0 auto 2.5rem;line-height:1.7;font-weight:300;}
+.search-outer{max-width:640px;margin:0 auto;padding:0 1rem;}
+.search-box{display:flex;align-items:center;background:var(--white);border-radius:12px;padding:.45rem .45rem .45rem 1.1rem;gap:.6rem;box-shadow:0 4px 24px rgba(0,0,0,.18);}
+.search-box svg{color:var(--muted);flex-shrink:0;}
+#clientInput{flex:1;border:none;outline:none;font-family:'Outfit',Arial,sans-serif;font-size:.97rem;color:var(--text);min-width:0;}
+#clientInput::placeholder{color:var(--muted);}
+#generateBtn{background:var(--orange);color:var(--white);border:none;border-radius:9px;padding:.6rem 1.4rem;font-family:'Outfit',Arial,sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s,transform .1s;flex-shrink:0;}
+#generateBtn:hover{background:#ea6a0a;transform:translateY(-1px);}
+#generateBtn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.chips{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;margin-top:1.2rem;padding:0 1rem;}
+.chip{font-size:.72rem;font-weight:500;color:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:.25rem .75rem;}
+
+/* ── AUTOCOMPLETE ── */
+.search-outer{position:relative;}
+.ac-dropdown{
+  position:absolute;
+  top:calc(100% + 6px);
+  left:1rem; right:1rem;
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,.18);
+  overflow:hidden;
+  z-index:200;
+  display:none;
+}
+.ac-dropdown.open{display:block;}
+.ac-item{
+  display:flex;align-items:center;gap:.65rem;
+  padding:.62rem 1rem;
+  cursor:pointer;
+  transition:background .12s;
+  border-bottom:1px solid var(--border);
+}
+.ac-item:last-child{border-bottom:none;}
+.ac-item:hover,.ac-item.focused{background:var(--offwhite);}
+.ac-logo{
+  width:28px;height:28px;border-radius:6px;
+  background:var(--blue);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:800;color:#fff;
+  flex-shrink:0;letter-spacing:-.02em;
+}
+.ac-name{font-size:.9rem;font-weight:600;color:var(--text);}
+.ac-cat{font-size:.72rem;color:var(--muted);margin-left:auto;white-space:nowrap;}
+.ac-empty{padding:.8rem 1rem;font-size:.85rem;color:var(--muted);font-style:italic;}
+
+/* ── OBJECTIVES ── */
+.objectives-wrap{max-width:640px;margin:.85rem auto 0;padding:0 1rem;}
+.objectives-label{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:.5rem;text-align:left;}
+.objectives-grid{display:flex;flex-wrap:wrap;gap:.45rem;}
+.obj-pill{
+  display:flex;align-items:center;gap:.38rem;
+  background:rgba(255,255,255,.1);
+  border:1.5px solid rgba(255,255,255,.22);
+  border-radius:99px;
+  padding:.32rem .85rem;
+  cursor:pointer;
+  transition:background .15s,border-color .15s,transform .1s;
+  user-select:none;
+}
+.obj-pill:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4);}
+.obj-pill.selected{
+  background:var(--orange);
+  border-color:var(--orange);
+  transform:translateY(-1px);
+}
+.obj-pill-icon{font-size:.82rem;line-height:1;}
+.obj-pill-label{font-size:.75rem;font-weight:600;color:rgba(255,255,255,.88);}
+.obj-pill.selected .obj-pill-label{color:#fff;}
+.obj-req-hint{font-size:.7rem;color:rgba(255,255,255,.4);margin-top:.5rem;text-align:left;}
+
+/* ── CROSS-BORDER SECTION ── */
+.cb-wrap{max-width:640px;margin:.9rem auto 0;padding:0 1rem;}
+.cb-row{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;}
+.cb-toggle-label{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);}
+.toggle-track{width:44px;height:24px;border-radius:99px;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.3);cursor:pointer;position:relative;transition:background .2s,border-color .2s;flex-shrink:0;}
+.toggle-track.on{background:var(--orange);border-color:var(--orange);}
+.toggle-thumb{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.toggle-track.on .toggle-thumb{transform:translateX(20px);}
+.cb-options{display:none;width:100%;margin-top:.75rem;}
+.cb-options.open{display:block;}
+.cb-sub-label{font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:.42rem;}
+.cb-geos{display:flex;flex-wrap:wrap;gap:.38rem;margin-bottom:.65rem;}
+.geo-pill{font-size:.72rem;font-weight:600;color:rgba(255,255,255,.78);border:1.5px solid rgba(255,255,255,.22);border-radius:99px;padding:.26rem .75rem;cursor:pointer;transition:background .13s,border-color .13s;background:rgba(255,255,255,.08);}
+.geo-pill:hover{background:rgba(255,255,255,.18);}
+.geo-pill.selected{background:var(--teal);border-color:var(--teal);color:#fff;}
+.cb-ai-row{display:flex;align-items:center;gap:.6rem;margin-top:.55rem;padding:.55rem .75rem;background:rgba(255,255,255,.07);border-radius:8px;border:1px solid rgba(255,255,255,.12);}
+.ai-toggle-track{width:34px;height:20px;border-radius:99px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
+.ai-toggle-track.on{background:var(--teal);border-color:var(--teal);}
+.ai-toggle-thumb{width:14px;height:14px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;}
+.ai-toggle-track.on .ai-toggle-thumb{transform:translateX(14px);}
+.ai-label-text{font-size:.72rem;color:rgba(255,255,255,.6);line-height:1.4;}
+.ai-label-text strong{color:rgba(255,255,255,.88);}
+.ai-result{display:none;margin-top:.5rem;font-size:.72rem;color:rgba(255,255,255,.75);font-style:italic;padding:.4rem .6rem;background:rgba(0,212,100,.1);border-radius:6px;border-left:2px solid var(--teal);}
+.ai-result.visible{display:block;}
+
+.body{max-width:720px;margin:2.5rem auto 4rem;padding:0 1.5rem;}
+#status{display:none;}
+.status-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.8rem;position:relative;overflow:hidden;box-shadow:0 2px 16px rgba(33,66,149,.07);}
+.status-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--teal),var(--orange),var(--burg));background-size:300% 100%;animation:shimmer 2.5s linear infinite;}
+@keyframes shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
+.status-title{font-weight:700;color:var(--blue);margin-bottom:1.2rem;font-size:.88rem;letter-spacing:.05em;text-transform:uppercase;}
+.steps{list-style:none;display:flex;flex-direction:column;gap:.55rem;}
+.step{display:flex;align-items:center;gap:.7rem;font-size:.86rem;color:var(--muted);transition:color .3s;}
+.step.active{color:var(--text);font-weight:600;}
+.step.done{color:var(--teal);font-weight:500;}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .3s;}
+.step.active .step-dot{background:var(--orange);}
+.step.done .step-dot{background:var(--teal);}
+#error{display:none;}
+.error-card{background:#FFF5F5;border:1px solid #FCA5A5;border-radius:12px;padding:1rem 1.2rem;font-size:.85rem;color:#DC2626;}
+#result{display:none;}
+.result-card{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(33,66,149,.1);}
+.result-top{background:var(--blue);color:var(--white);padding:1.5rem 1.8rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
+.result-title{font-size:1.05rem;font-weight:700;}
+.result-meta{font-size:.75rem;opacity:.7;margin-top:.2rem;font-weight:300;}
+.dl-btn{display:flex;align-items:center;gap:.45rem;background:var(--orange);color:var(--white);border:none;border-radius:9px;padding:.6rem 1.1rem;font-family:'Outfit',Arial,sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;flex-shrink:0;transition:background .15s;}
+.dl-btn:hover{background:#ea6a0a;}
+.result-body{padding:1.5rem 1.8rem;}
+.slides-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.7rem;margin-bottom:1.2rem;}
+.slide-chip{background:var(--offwhite);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;border-left:3px solid var(--blue);}
+.slide-chip-num{font-size:.68rem;font-weight:700;color:var(--blue);margin-bottom:.2rem;text-transform:uppercase;letter-spacing:.04em;}
+.slide-chip-name{font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:.18rem;}
+.slide-chip-desc{font-size:.72rem;color:var(--muted);line-height:1.4;}
+.result-note{font-size:.78rem;color:var(--muted);border-top:1px solid var(--border);padding-top:.9rem;display:flex;align-items:center;gap:.4rem;}
+footer{text-align:center;font-size:.73rem;color:var(--muted);padding:2rem;border-top:1px solid var(--border);}
+footer strong{color:var(--blue);}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <svg width="88" height="28" viewBox="0 0 88 28" fill="none">
+      <text x="0" y="22" font-family="Arial" font-size="20" font-weight="900" font-style="italic" fill="#214295">tyroo</text>
+      <line x1="62" y1="4" x2="62" y2="24" stroke="#214295" stroke-width="1.5"/>
+      <circle cx="76" cy="14" r="10" stroke="#214295" stroke-width="2"/>
+      <text x="71" y="19" font-family="Arial" font-size="12" font-weight="800" fill="#214295">CJ</text>
+    </svg>
+    <span class="nav-logo-sub">· Pitch Studio</span>
+  </div>
+  <div class="nav-badge">Internal</div>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow">AI-Powered Sales Intelligence</div>
+  <h1>Generate a <span>client-specific</span><br/>pitch deck in 60 seconds</h1>
+  <p>Enter a client name. We research them, build a market brief, and output a fully customised PowerPoint with speaker notes — in Tyroo CJ brand.</p>
+  <div class="search-outer">
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="clientInput" type="text" placeholder="e.g. Myntra, Shopee, H&M India, Noon.com, Adidas SEA…" autocomplete="off"/>
+      <button id="generateBtn" onclick="handleGenerate()">Generate Deck →</button>
+    </div>
+    <div class="ac-dropdown" id="acDropdown"></div>
+  </div>
+  <!-- OBJECTIVES -->
+  <div class="objectives-wrap">
+    <div class="objectives-label">Client objectives <span style="opacity:.5;font-weight:400;text-transform:none;letter-spacing:0">(select all that apply)</span></div>
+    <div class="objectives-grid" id="objGrid"></div>
+    <div class="obj-req-hint" id="objHint"></div>
+  </div>
+
+  <!-- CROSS-BORDER -->
+  <div class="cb-wrap">
+    <div class="cb-row">
+      <span class="cb-toggle-label">Campaign type</span>
+      <div class="toggle-track" id="cbTrack" onclick="toggleCrossBorder()">
+        <div class="toggle-thumb"></div>
+      </div>
+      <span id="cbLabel" style="font-size:.8rem;font-weight:600;color:rgba(255,255,255,.85)">Domestic</span>
+    </div>
+
+    <div class="cb-options" id="cbOptions">
+      <div class="cb-sub-label">Target geographies <span style="opacity:.6;font-weight:400;text-transform:none;letter-spacing:0">(select all that apply)</span></div>
+      <div class="cb-geos" id="geoGrid"></div>
+
+      <div class="cb-ai-row">
+        <div class="ai-toggle-track" id="aiTrack" onclick="toggleAiAssist()">
+          <div class="ai-toggle-thumb"></div>
+        </div>
+        <div class="ai-label-text">
+          <strong>Not sure about cross-border dynamics?</strong> Let AI recommend the right markets and strategy based on the client's category and current footprint.
+        </div>
+      </div>
+      <div class="ai-result" id="aiResult"></div>
+    </div>
+  </div>
+
+  <div class="chips" style="margin-top:1.5rem">
+    <div class="chip">Live web research</div>
+    <div class="chip">Speaker notes per slide</div>
+    <div class="chip">Market brief by geo</div>
+    <div class="chip">Tyroo CJ brand colours & layout</div>
+    <div class="chip">Instant .pptx download</div>
+  </div>
+</section>
+
+<div class="body">
+  <div id="error"><div class="error-card" id="errorMsg"></div></div>
+  <div id="status">
+    <div class="status-card">
+      <div class="status-title">Building your pitch deck</div>
+      <ul class="steps">
+        <li class="step" id="s1"><div class="step-dot"></div>Researching client via web search…</li>
+        <li class="step" id="s2"><div class="step-dot"></div>Analysing category, markets & affiliate maturity…</li>
+        <li class="step" id="s3"><div class="step-dot"></div>Writing slide content & speaker notes…</li>
+        <li class="step" id="s4"><div class="step-dot"></div>Tailoring pricing model & integration…</li>
+        <li class="step" id="s5"><div class="step-dot"></div>Assembling branded PowerPoint file…</li>
+      </ul>
+    </div>
+  </div>
+  <div id="result"></div>
+</div>
+
+<footer><strong>Tyroo | CJ</strong> Pitch Studio · Internal Use Only · Powered by Claude AI + CJ Global Platform</footer>
+
+<script>
+// ─── BRAND PALETTE (exact from brand book) ───
+const GEMINI_KEY='AIzaSyB7dtOOXNuXIhG2ECBoSSer8YcvjGe5kFc';
+const GEMINI_URL=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+
+async function gemini(systemPrompt, userPrompt, maxTokens=3000){
+  const r=await fetch(GEMINI_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      system_instruction:{parts:[{text:systemPrompt}]},
+      contents:[{role:'user',parts:[{text:userPrompt}]}],
+      generationConfig:{maxOutputTokens:maxTokens,temperature:0.7}
+    })
+  });
+  const d=await r.json();
+  if(d.error)throw new Error(d.error.message||'Gemini API error');
+  return d.candidates?.[0]?.content?.parts?.[0]?.text||'';
+}
+const B={
+  blue:'214295',teal:'025450',orange:'F97316',burg:'6E1B35',
+  sky:'A6DDEE',cream:'FDBBA0',green:'5BA976',amber:'FFBE60',
+  white:'FFFFFF',offwhite:'F8F9FC',dark:'191919',gray:'64748B',lgray:'E2E8F0',
+  blueBg:'EEF2FF',burgBg:'FFF5F2',
+};
+
+// ─── TYROO CJ CONTENT (from pitch decks + brand book) ───
+const TCJ={
+  descriptor:"Tyroo | CJ is APAC's next-gen performance marketing platform trusted to deliver growth for brands, publishers, and creators.",
+  vision:"To be the most trusted performance marketing platform for growth.",
+  mission:"Transforming performance marketing and evolving it in APAC through continuous growth.",
+  globalRevenue:"$26bn global revenue driven to advertisers annually via CJ network",
+  publisherCount:"15,000+ vetted publishers across content, coupon, cashback, social & comparison",
+  markets:["India","Southeast Asia (MY, SG, TH, PH, ID, VN)","China","United States","European Union","APAC"],
+  cjGlobal:"CJ Affiliate is part of Publicis Groupe, the world's largest communications group. CJ drives $26B in annual revenue to advertisers globally. Tyroo brings this infrastructure, data, and technology to every brand in APAC.",
+  products:{
+    "CJ Affiliate":"End-to-end affiliate marketing with full-funnel publisher management, AI commission optimisation, and cross-channel measurement.",
+    "CJ Influence":"Data-fuelled creator commerce — influencer affiliate programs delivering up to 10X ROAS via authentic content at scale.",
+    "CJ Leads":"Verified first-party lead generation on cost-per-lead pricing. Average 10X ROAS. Fraud-validated, real-time reporting.",
+    "CJ Marketplaces":"Always-on pay-for-performance access to Amazon and TikTok Shop — first affiliate network to offer marketplace performance marketing."
+  },
+  integrations:{
+    "JS Pixel Tag":"Lightest-lift integration for standard ecommerce stacks. 1–2 day go-live.",
+    "Server-to-Server (S2S)":"Best for fraud-sensitive categories. Eliminates client-side tracking loss. Recommended for high-volume programs.",
+    "App SDK (iOS / Android)":"Mobile-first brands — tracks installs, in-app events, and first purchases natively.",
+    "API Integration":"Full programmatic control for complex catalogues or subscription models.",
+    "Voucher Code Tracking":"Ideal for influencer-led and offline campaigns where pixel tracking is not feasible.",
+    "CJ Universal Tag":"Future-proof sitewide tagging with reverse proxy — immune to browser tracking restrictions."
+  },
+  pricingModels:{
+    "PoS (Pay on Sale)":"Commission paid on confirmed, attributed sales only. Typical rates 3–15% net sale value. Zero media risk for brand — pure performance.",
+    "PoC (Pay on Click)":"Fixed CPC model for traffic and awareness objectives. Budget predictability across publisher mix.",
+    "CPL (Cost per Lead)":"Pay only for verified, fraud-validated leads delivered to CRM. Average 10X ROAS. Ideal for financial services, insurance, and education.",
+    "Hybrid":"Blended PoS + PoC or PoS + CPL tailored to publisher segments. Top-of-funnel display on PoC, content and coupon on PoS."
+  },
+  whyUs:[
+    "Only affiliate network with on-ground teams across India, SEA, China, US, and EU — no third-party resellers",
+    "CJ's global AI engine: ML commission optimisation, partner recommendations, and conversational analytics",
+    "15,000+ vetted publishers activated from Day 1 — warm relationships, not cold outreach",
+    "CJ Fraud & Anomaly Detection: real-time fraud identification, anomaly monitoring, compliance ratings per publisher",
+    "Unified measurement across affiliate, retail media, and paid channels — single source of truth",
+    "$26 billion in annual advertiser revenue powered globally — Tyroo brings this to APAC"
+  ],
+  aiCapabilities:[
+    "AI-powered partner recommendations identifying high-performing undiscovered publishers",
+    "ML commission rate optimisation — detects underutilised, rate-constrained publisher segments",
+    "Conversational analytics chatbot — instant natural language queries on ROI, top performers, forecasts",
+    "Predictive revenue forecasting and campaign incrementality measurement"
+  ]
+};
+
+// ─── UI ───
+let _dl=null;
+function setStep(n){for(let i=1;i<=5;i++){const e=document.getElementById('s'+i);e.classList.remove('active','done');if(i<n)e.classList.add('done');if(i===n)e.classList.add('active');}}
+function showStatus(v){document.getElementById('status').style.display=v?'block':'none';}
+function showError(m){document.getElementById('error').style.display='block';document.getElementById('errorMsg').textContent='⚠ '+m;}
+function hideError(){document.getElementById('error').style.display='none';}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+document.getElementById('clientInput').addEventListener('keydown',e=>{if(e.key==='Enter')handleGenerate();});
+async function downloadPptx(){if(_dl)await _dl();}
+
+function showResult(cn,slides,cb=null){
+  const el=document.getElementById('result');el.style.display='block';
+  const objs=getSelectedObjectives();
+  const objLine=objs.length>0?` · ${objs.map(o=>o.icon+' '+o.label).join(', ')}`:'';
+  const cbLine=cb?` · 🌐 Cross-border → ${cb.targetGeos.join(', ')}`:'';
+  el.innerHTML=`<div class="result-card">
+    <div class="result-top">
+      <div><div class="result-title">Pitch Deck · ${cn}</div><div class="result-meta">${slides.length} slides · Speaker notes · Tyroo CJ brand${objLine}${cbLine}</div></div>
+      <button class="dl-btn" onclick="downloadPptx()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download .pptx</button>
+    </div>
+    <div class="result-body">
+      <div class="slides-grid">${slides.map((s,i)=>`<div class="slide-chip"><div class="slide-chip-num">Slide ${i+1}</div><div class="slide-chip-name">${s.name}</div><div class="slide-chip-desc">${s.desc}</div></div>`).join('')}</div>
+      <div class="result-note"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Open in PowerPoint to edit speaker notes and add brand photography per the Tyroo CJ brand book guidelines.</div>
+    </div></div>`;
+}
+
+// ─── COMPANY LIST ───
+const COMPANIES=[
+  // India — Fashion & Retail
+  {name:'Myntra',cat:'Fashion E-commerce · India',color:'E91E8C'},
+  {name:'Nykaa',cat:'Beauty & Fashion · India',color:'FC2779'},
+  {name:'Ajio',cat:'Fashion E-commerce · India',color:'1B1B1B'},
+  {name:'Meesho',cat:'Social Commerce · India',color:'9B59B6'},
+  {name:'Flipkart',cat:'Marketplace · India',color:'2874F0'},
+  {name:'Amazon India',cat:'Marketplace · India',color:'FF9900'},
+  {name:'Tata CLiQ',cat:'Premium Retail · India',color:'003087'},
+  {name:'Snapdeal',cat:'Marketplace · India',color:'E40046'},
+  {name:'Bewakoof',cat:'Fashion D2C · India',color:'FF4500'},
+  {name:'Manyavar',cat:'Ethnic Fashion · India',color:'8B0000'},
+  // India — Travel
+  {name:'MakeMyTrip',cat:'Travel OTA · India',color:'E8334A'},
+  {name:'EaseMyTrip',cat:'Travel OTA · India',color:'00AEEF'},
+  {name:'Cleartrip',cat:'Travel OTA · India',color:'F26522'},
+  {name:'OYO',cat:'Hospitality · India',color:'EE2B2B'},
+  {name:'Airbnb India',cat:'Short-term Rental · India',color:'FF5A5F'},
+  // India — Fintech
+  {name:'Policybazaar',cat:'Insurance · India',color:'00B4D8'},
+  {name:'Paisabazaar',cat:'Financial Services · India',color:'0077B6'},
+  {name:'PhonePe',cat:'Payments · India',color:'5F259F'},
+  {name:'CRED',cat:'Fintech · India',color:'1A1A2E'},
+  {name:'Groww',cat:'Investment · India',color:'00D09C'},
+  {name:'Zerodha',cat:'Stock Broking · India',color:'387ED1'},
+  // India — Food & Health
+  {name:'Zomato',cat:'Food Delivery · India',color:'E23744'},
+  {name:'Swiggy',cat:'Food Delivery · India',color:'FC8019'},
+  {name:'BigBasket',cat:'Grocery · India',color:'84C225'},
+  {name:'PharmEasy',cat:'Health & Pharma · India',color:'2DB0C5'},
+  {name:'1mg',cat:'Health Tech · India',color:'E84393'},
+  // SEA
+  {name:'Shopee',cat:'Marketplace · SEA',color:'EE4D2D'},
+  {name:'Lazada',cat:'Marketplace · SEA',color:'0F146D'},
+  {name:'Tokopedia',cat:'Marketplace · Indonesia',color:'42B549'},
+  {name:'Grab',cat:'Super App · SEA',color:'00B14F'},
+  {name:'Sea Group',cat:'Digital · SEA',color:'16213E'},
+  {name:'Zalora',cat:'Fashion E-commerce · SEA',color:'1A1A1A'},
+  {name:'Agoda',cat:'Travel OTA · SEA',color:'005EB8'},
+  {name:'Klook',cat:'Travel & Experiences · SEA',color:'FF5722'},
+  {name:'FairPrice',cat:'Grocery · Singapore',color:'E30613'},
+  {name:'Pomelo Fashion',cat:'Fashion · SEA',color:'F5A5C8'},
+  // Middle East
+  {name:'Noon',cat:'Marketplace · Middle East',color:'FEEE00'},
+  {name:'Namshi',cat:'Fashion · Middle East',color:'FF0041'},
+  {name:'Ounass',cat:'Luxury Fashion · UAE',color:'C9A84C'},
+  {name:'Careem',cat:'Super App · MENA',color:'1DBF73'},
+  {name:'Talabat',cat:'Food Delivery · MENA',color:'FF6A00'},
+  // Global Brands (APAC presence)
+  {name:'H&M',cat:'Fashion · Global',color:'E50010'},
+  {name:'Zara',cat:'Fashion · Global',color:'000000'},
+  {name:'Nike',cat:'Sportswear · Global',color:'111111'},
+  {name:'Adidas',cat:'Sportswear · Global',color:'000000'},
+  {name:'Samsung',cat:'Electronics · Global',color:'1428A0'},
+  {name:'Apple',cat:'Electronics · Global',color:'555555'},
+  {name:'Booking.com',cat:'Travel · Global',color:'003580'},
+  {name:'Expedia',cat:'Travel · Global',color:'00355F'},
+  {name:'Marriott',cat:'Hotels · Global',color:'A5222F'},
+  {name:'Hilton',cat:'Hotels · Global',color:'002B5B'},
+  // China
+  {name:'Alibaba',cat:'Marketplace · China',color:'FF6A00'},
+  {name:'JD.com',cat:'E-commerce · China',color:'CC0000'},
+  {name:'Pinduoduo',cat:'Social Commerce · China',color:'E02020'},
+  {name:'Trip.com',cat:'Travel · China',color:'2577E3'},
+  // EdTech & Gaming
+  {name:'BYJU\'S',cat:'EdTech · India',color:'9B59B6'},
+  {name:'Unacademy',cat:'EdTech · India',color:'08BD80'},
+  {name:'upGrad',cat:'EdTech · India',color:'3D5EF5'},
+  {name:'MPL',cat:'Gaming · India/SEA',color:'FF9933'},
+  {name:'Dream11',cat:'Fantasy Sports · India',color:'1C2951'},
+  // D2C / Beauty
+  {name:'Mamaearth',cat:'Beauty D2C · India',color:'5C8A29'},
+  {name:'WOW Skin Science',cat:'Beauty D2C · India',color:'E91E63'},
+  {name:'Boat',cat:'Consumer Electronics D2C · India',color:'1A1A1A'},
+  {name:'Sugar Cosmetics',cat:'Beauty D2C · India',color:'D40B55'},
+  {name:'Lenskart',cat:'Eyewear · India',color:'00A3E0'},
+];
+
+// ─── AUTOCOMPLETE LOGIC ───
+(function initAutocomplete(){
+  const input=document.getElementById('clientInput');
+  const drop=document.getElementById('acDropdown');
+  let focusedIdx=-1;
+  let filtered=[];
+
+  function getInitials(name){
+    return name.split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  }
+
+  function render(list){
+    filtered=list;focusedIdx=-1;
+    if(!list.length){
+      drop.innerHTML=`<div class="ac-empty">No matches — just type and we'll research them</div>`;
+      drop.classList.add('open');return;
+    }
+    drop.innerHTML=list.slice(0,8).map((c,i)=>`
+      <div class="ac-item" data-idx="${i}">
+        <div class="ac-logo" style="background:#${c.color}">${getInitials(c.name)}</div>
+        <span class="ac-name">${c.name}</span>
+        <span class="ac-cat">${c.cat}</span>
+      </div>`).join('');
+    drop.querySelectorAll('.ac-item').forEach(el=>{
+      el.addEventListener('mousedown',e=>{e.preventDefault();select(filtered[+el.dataset.idx]);});
+    });
+    drop.classList.add('open');
+  }
+
+  function select(company){
+    input.value=company.name;
+    drop.classList.remove('open');
+    focusedIdx=-1;
+    // Auto-suggest category-relevant objectives
+    autoSelectObjectives(company);
+  }
+
+  function close(){drop.classList.remove('open');focusedIdx=-1;}
+
+  function setFocus(idx){
+    const items=drop.querySelectorAll('.ac-item');
+    items.forEach(el=>el.classList.remove('focused'));
+    if(idx>=0&&idx<items.length){items[idx].classList.add('focused');focusedIdx=idx;}
+  }
+
+  input.addEventListener('input',()=>{
+    const q=input.value.trim().toLowerCase();
+    if(!q){close();return;}
+    const matches=COMPANIES.filter(c=>
+      c.name.toLowerCase().includes(q)||c.cat.toLowerCase().includes(q)
+    );
+    render(matches);
+  });
+
+  input.addEventListener('keydown',e=>{
+    if(!drop.classList.contains('open'))return;
+    if(e.key==='ArrowDown'){e.preventDefault();setFocus(Math.min(focusedIdx+1,Math.min(filtered.length,8)-1));}
+    else if(e.key==='ArrowUp'){e.preventDefault();setFocus(Math.max(focusedIdx-1,0));}
+    else if(e.key==='Enter'&&focusedIdx>=0){e.preventDefault();select(filtered[focusedIdx]);}
+    else if(e.key==='Escape'){close();}
+  });
+
+  document.addEventListener('click',e=>{if(!e.target.closest('.search-outer'))close();});
+})();
+
+// Auto-suggest objectives based on company category
+function autoSelectObjectives(company){
+  const cat=company.cat.toLowerCase();
+  const map={
+    'fashion':['sales','traffic','awareness'],
+    'beauty':['sales','awareness','influence'],
+    'travel':['leads','sales','awareness'],
+    'food':['sales','traffic'],
+    'fintech':['qualifiedleads','leads'],
+    'insurance':['qualifiedleads'],
+    'edtech':['leads','qualifiedleads'],
+    'gaming':['appsignups','engagement'],
+    'marketplace':['sales','marketplaces'],
+    'grocery':['sales','retention'],
+    'hotel':['sales','leads'],
+    'electronics':['sales','awareness'],
+    'investment':['qualifiedleads'],
+    'sports':['engagement','appsignups'],
+    'super app':['appsignups','engagement'],
+  };
+  // deselect all first
+  document.querySelectorAll('.obj-pill.selected').forEach(p=>p.classList.remove('selected'));
+  // find matching keys
+  const toSelect=new Set();
+  Object.entries(map).forEach(([key,ids])=>{if(cat.includes(key))ids.forEach(id=>toSelect.add(id));});
+  toSelect.forEach(id=>{
+    const pill=document.querySelector(`.obj-pill[data-id="${id}"]`);
+    if(pill)pill.classList.add('selected');
+  });
+  updateObjHint();
+}
+
+// ─── CROSS-BORDER LOGIC ───
+const GEOS=[
+  {id:'india',flag:'🇮🇳',label:'India'},
+  {id:'sea',flag:'🌏',label:'SEA'},
+  {id:'sg',flag:'🇸🇬',label:'Singapore'},
+  {id:'my',flag:'🇲🇾',label:'Malaysia'},
+  {id:'th',flag:'🇹🇭',label:'Thailand'},
+  {id:'id',flag:'🇮🇩',label:'Indonesia'},
+  {id:'ph',flag:'🇵🇭',label:'Philippines'},
+  {id:'vn',flag:'🇻🇳',label:'Vietnam'},
+  {id:'cn',flag:'🇨🇳',label:'China'},
+  {id:'hk',flag:'🇭🇰',label:'Hong Kong'},
+  {id:'tw',flag:'🇹🇼',label:'Taiwan'},
+  {id:'jp',flag:'🇯🇵',label:'Japan'},
+  {id:'kr',flag:'🇰🇷',label:'Korea'},
+  {id:'au',flag:'🇦🇺',label:'Australia'},
+  {id:'ae',flag:'🇦🇪',label:'UAE'},
+  {id:'sa',flag:'🇸🇦',label:'Saudi Arabia'},
+  {id:'us',flag:'🇺🇸',label:'USA'},
+  {id:'uk',flag:'🇬🇧',label:'UK'},
+  {id:'de',flag:'🇩🇪',label:'Germany'},
+];
+
+let isCrossBorder=false;
+let aiAssistOn=false;
+
+(function initGeos(){
+  const grid=document.getElementById('geoGrid');
+  GEOS.forEach(g=>{
+    const pill=document.createElement('div');
+    pill.className='geo-pill';
+    pill.dataset.id=g.id;
+    pill.innerHTML=`${g.flag} ${g.label}`;
+    pill.addEventListener('click',()=>{pill.classList.toggle('selected');clearAiResult();});
+    grid.appendChild(pill);
+  });
+})();
+
+function toggleCrossBorder(){
+  isCrossBorder=!isCrossBorder;
+  const track=document.getElementById('cbTrack');
+  const label=document.getElementById('cbLabel');
+  const opts=document.getElementById('cbOptions');
+  track.classList.toggle('on',isCrossBorder);
+  label.textContent=isCrossBorder?'Cross-border':'Domestic';
+  opts.classList.toggle('open',isCrossBorder);
+  if(!isCrossBorder){
+    // deselect all geos, reset AI
+    document.querySelectorAll('.geo-pill.selected').forEach(p=>p.classList.remove('selected'));
+    clearAiResult();
+    if(aiAssistOn)toggleAiAssist();
+  }
+}
+
+function toggleAiAssist(){
+  aiAssistOn=!aiAssistOn;
+  const track=document.getElementById('aiTrack');
+  track.classList.toggle('on',aiAssistOn);
+  if(aiAssistOn) runAiGeoAssist();
+  else clearAiResult();
+}
+
+function clearAiResult(){
+  const el=document.getElementById('aiResult');
+  el.classList.remove('visible');el.textContent='';
+}
+
+async function runAiGeoAssist(){
+  const cn=document.getElementById('clientInput').value.trim();
+  const el=document.getElementById('aiResult');
+  el.classList.add('visible');
+  el.textContent='🤖 Analysing best cross-border markets…';
+  const prompt=cn
+    ? `Given a brand called "${cn}", which 2-4 international markets from this list should they prioritise for cross-border affiliate marketing, and why? List: India, SEA (MY/SG/TH/PH/ID/VN), China, Japan, Korea, Australia, UAE, USA, UK. Give a single short paragraph — under 60 words. No bullet points. Be direct.`
+    : `I'm pitching cross-border affiliate marketing to an APAC client but I'm not sure which geos to prioritise. Which 2-3 markets from this list are highest opportunity right now: India, SEA, China, Japan, Korea, Australia, UAE, USA, UK? Under 50 words. Be direct.`;
+  try{
+    const text=await gemini(
+      'You are a senior performance marketing strategist specialising in cross-border affiliate marketing across APAC, MENA, and Western markets.',
+      prompt, 200
+    );
+    el.textContent='🤖 '+text.trim();
+    const lower=text.toLowerCase();
+    GEOS.forEach(g=>{
+      if(lower.includes(g.label.toLowerCase())||lower.includes(g.id)){
+        const pill=document.querySelector(`.geo-pill[data-id="${g.id}"]`);
+        if(pill)pill.classList.add('selected');
+      }
+    });
+  }catch(e){
+    el.textContent='Could not reach AI — please select markets manually.';
+  }
+}
+
+function getCrossBorderContext(){
+  if(!isCrossBorder) return null;
+  const geos=Array.from(document.querySelectorAll('.geo-pill.selected')).map(p=>GEOS.find(g=>g.id===p.dataset.id)?.label).filter(Boolean);
+  return {isCrossBorder:true, targetGeos: geos.length>0 ? geos : ['to be determined']};
+}
+
+// ─── OBJECTIVES SETUP ───
+const OBJECTIVES=[
+  {id:'brand',icon:'🏷️',label:'Brand Building',product:'CJ Affiliate',pricing:'PoC',note:'awareness-first publisher mix — editorial, content, display'},
+  {id:'awareness',icon:'📣',label:'Awareness',product:'CJ Affiliate',pricing:'PoC',note:'top-of-funnel publishers: content, native, social, CTV'},
+  {id:'traffic',icon:'🚦',label:'Traffic',product:'CJ Affiliate',pricing:'PoC',note:'high-volume CPC publishers: comparison, deal, toolbar'},
+  {id:'engagement',icon:'💬',label:'Engagement',product:'CJ Influence',pricing:'PoS',note:'creator and influencer content driving dwell time and interaction'},
+  {id:'leads',icon:'📋',label:'Leads',product:'CJ Leads',pricing:'CPL',note:'broad lead gen — email, display, social — cost per lead model'},
+  {id:'qualifiedleads',icon:'🎯',label:'Qualified Leads',product:'CJ Leads',pricing:'CPL',note:'high-intent verified leads with fraud detection and CRM integration'},
+  {id:'appsignups',icon:'📱',label:'App Installs / Sign-ups',product:'CJ Affiliate',pricing:'PoS',note:'App SDK integration — tracks installs, registrations, first events'},
+  {id:'sales',icon:'🛒',label:'Sales',product:'CJ Affiliate',pricing:'PoS',note:'pure PoS model — commission on confirmed attributed sale only'},
+  {id:'retention',icon:'🔄',label:'Customer Retention',product:'CJ Affiliate',pricing:'Hybrid',note:'loyalty and cashback publishers — rewards-based repeat purchase'},
+  {id:'marketplaces',icon:'🏪',label:'Marketplace Growth',product:'CJ Marketplaces',pricing:'PoS',note:'Amazon / TikTok Shop performance — first affiliate marketplace solution'},
+  {id:'influence',icon:'🌟',label:'Creator / Influencer',product:'CJ Influence',pricing:'PoS',note:'CJ Influence — 10X ROAS on authenticated creator content at scale'},
+  {id:'newmarkets',icon:'🌏',label:'New Market Entry',product:'CJ Affiliate',pricing:'Hybrid',note:'geo-targeted publisher activation with local market expertise'},
+];
+
+(function initObjectives(){
+  const grid=document.getElementById('objGrid');
+  OBJECTIVES.forEach(obj=>{
+    const pill=document.createElement('div');
+    pill.className='obj-pill';
+    pill.dataset.id=obj.id;
+    pill.innerHTML=`<span class="obj-pill-icon">${obj.icon}</span><span class="obj-pill-label">${obj.label}</span>`;
+    pill.addEventListener('click',()=>{
+      pill.classList.toggle('selected');
+      updateObjHint();
+    });
+    grid.appendChild(pill);
+  });
+})();
+
+function getSelectedObjectives(){
+  return Array.from(document.querySelectorAll('.obj-pill.selected'))
+    .map(p=>OBJECTIVES.find(o=>o.id===p.dataset.id))
+    .filter(Boolean);
+}
+
+function updateObjHint(){
+  const sel=getSelectedObjectives();
+  const hint=document.getElementById('objHint');
+  if(sel.length===0){hint.textContent='';return;}
+  const products=[...new Set(sel.map(o=>o.product))];
+  hint.textContent=`→ Suggested: ${products.join(' + ')}`;
+}
+
+// ─── MAIN ───
+async function handleGenerate(){
+  const cn=document.getElementById('clientInput').value.trim();
+  if(!cn){showError('Please enter a client name.');return;}
+  const objs=getSelectedObjectives();
+  const cb=getCrossBorderContext();
+  hideError();document.getElementById('result').style.display='none';
+  document.getElementById('generateBtn').disabled=true;
+  showStatus(true);setStep(1);
+  try{
+    const R=await researchClient(cn);setStep(2);await sleep(300);
+    setStep(3);
+    const C=await generateContent(cn,R,objs,cb);setStep(4);await sleep(300);
+    setStep(5);
+    const slides=buildPptx(cn,C,R,objs,cb);await sleep(500);
+    showStatus(false);showResult(cn,slides,cb);
+  }catch(e){showStatus(false);showError(e.message||'Something went wrong.');console.error(e);}
+  finally{document.getElementById('generateBtn').disabled=false;}
+}
+
+// ─── RESEARCH ───
+async function researchClient(cn){
+  const sys=`You are a senior business analyst in e-commerce, retail, affiliate and performance marketing across Asia-Pacific.
+Research the company and return ONLY valid JSON (no markdown fences, no preamble):
+{"companyOverview":"2-3 sentence description","category":"Primary category","activeMarkets":["markets"],"revenueSignals":"GMV/revenue/funding or empty string","affiliateMaturity":"Naive|Early|Mature","affiliateMilestone":"one sentence rationale","keyChallenge":"#1 growth challenge in 2025","competitors":["up to 3"],"keyFact1":"useful pitch fact","keyFact2":"digital/marketing strategy fact","recommendedMarkets":["Top 2-3 Tyroo CJ markets"],"publisherTypes":["relevant publisher types"],"toneForPitch":"Formal|Consultative|Energetic"}`;
+
+  // Use Gemini with Google Search grounding for live web research
+  const r=await fetch(GEMINI_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      system_instruction:{parts:[{text:sys}]},
+      contents:[{role:'user',parts:[{text:`Research this company thoroughly using search: "${cn}". Find their markets, category, digital maturity, revenue signals, and any affiliate/performance marketing activity. Return ONLY the JSON object.`}]}],
+      tools:[{google_search:{}}],
+      generationConfig:{maxOutputTokens:2000,temperature:0.3}
+    })
+  });
+  const d=await r.json();
+  if(d.error)throw new Error(d.error.message||'Gemini research error');
+  const text=d.candidates?.[0]?.content?.parts?.[0]?.text||'';
+  const m=text.match(/\{[\s\S]*\}/);
+  if(!m)throw new Error('Research parse error. Please try again.');
+  return JSON.parse(m[0]);
+}
+
+// ─── CONTENT ───
+async function generateContent(cn,R,objs=[],cb=null){
+  const objContext=objs.length>0
+    ? `\nClient selected objectives: ${objs.map(o=>`${o.label} (${o.note})`).join('; ')}.\nLet these objectives drive your product recommendation, pricing model, publisher strategy, and solution framing. If multiple objectives are selected, acknowledge the mix and show how Tyroo CJ addresses all of them.`
+    : '';
+  const cbContext=cb
+    ? `\nCampaign type: CROSS-BORDER. Target geographies: ${cb.targetGeos.join(', ')}. Frame the pitch around helping this client expand internationally into these specific markets. Emphasise Tyroo CJ's on-ground local teams, geo-targeted publisher activation, and market-specific compliance. Tailor the market brief and publisher strategy to the cross-border opportunity.`
+    : `\nCampaign type: DOMESTIC. Focus the pitch on deepening performance in the client's home market.`;
+  const sys=`You are a senior sales strategist at Tyroo | CJ.
+Brand voice: Young, authoritative, experimental, straightforward. Short sentences. Direct. From a position of knowledge.
+Return ONLY valid JSON (no markdown, no preamble):
+{"executiveSummary":"3-4 sentences for this specific client","whyNow":"2-3 sentences on market timing","marketBrief":{"headline":"bold headline under 12 words","body":"3-4 sentences geo/category specific","stat1":{"value":"e.g. $4.2B","label":"label"},"stat2":{"value":"e.g. 3.2x","label":"label"},"stat3":{"value":"e.g. 68%","label":"label"}},"clientChallenge":{"heading":"under 8 words","body":"2-3 sentences","points":["point1","point2","point3"]},"tyrooSolution":{"heading":"under 8 words","body":"2-3 sentences","points":["solution1","solution2","solution3"]},"recommendedProduct":{"primary":"CJ Affiliate|CJ Leads|CJ Influence|CJ Marketplaces","rationale":"2 sentences","secondary":"secondary product"},"recommendedIntegration":{"primary":"integration name","rationale":"2 sentences","timeline":"e.g. 2-3 weeks"},"recommendedPricing":{"model":"PoS|PoC|CPL|Hybrid","rationale":"2 sentences","commissionRange":"e.g. 5-8%","estimatedROAS":"e.g. 4.5x within 90 days"},"publisherStrategy":"2-3 sentences on which publisher types to activate first","caseStudyAngle":"type of similar brand and outcome (no real names)","nextSteps":["step1","step2","step3"],"speakerNotes":{"cover":"how to open","about":"proof points to emphasise","market":"data to call out","challenge":"how to make it resonate","solution":"positioning vs competitors","product":"product focus","integration":"tech talking points","pricing":"handle objections","nextsteps":"how to secure follow-up"}}`;
+  const text=await gemini(sys,
+    `Client: ${cn}\nResearch: ${JSON.stringify(R)}\nTyroo CJ: ${JSON.stringify({products:TCJ.products,pricingModels:TCJ.pricingModels,whyUs:TCJ.whyUs})}${objContext}${cbContext}\n\nGenerate deeply personalised pitch content for ${cn}. Every slide should feel written just for them.`,
+    3000
+  );
+  const m=text.match(/\{[\s\S]*\}/);
+  if(!m)throw new Error('Content generation failed. Please try again.');
+  return JSON.parse(m[0]);
+}
+
+// ─── BUILD PPTX ───
+function buildPptx(cn,C,R,objs=[],cb=null){
+  const pres=new pptxgen();
+  pres.layout='LAYOUT_WIDE'; // 13.33 × 7.5 — matches CJ template
+  pres.title=`Tyroo CJ × ${cn}`;
+  const W=13.33,H=7.5;
+  const ms=()=>({type:'outer',color:'000000',blur:6,offset:2,angle:135,opacity:0.1});
+
+  // ── shared helpers ──
+  function logo(s,x=0.5,y=0.3){
+    s.addText([{text:'tyroo',options:{bold:true,italic:true,color:B.blue,fontSize:12}},{text:'  |  ',options:{color:B.blue,fontSize:10}},{text:'CJ',options:{bold:true,color:B.blue,fontSize:10}}],{x,y,w:1.9,h:0.3,margin:0});
+  }
+  function footer(s,txt='Confidential · Internal Use Only'){
+    s.addText(txt,{x:0.5,y:H-0.32,w:W-1,h:0.26,fontSize:7.5,fontFace:'Arial',color:B.gray,margin:0});
+  }
+  function circles(s,x,y,color='FFFFFF',alpha=0.06){
+    [1.4,0.9,0.5].forEach((r,i)=>{
+      s.addShape(pres.shapes.OVAL,{x:x-r/2,y:y-r/2,w:r,h:r,fill:{type:'none'},line:{color,width:1.2,transparency:Math.round((1-alpha)*100*(1+i*0.3))}});
+    });
+  }
+  function splitLeft(s,color){
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:W*0.415,h:H,fill:{color},line:{color,width:0}});
+    circles(s,0,H,B.white,0.07);
+  }
+  function stat(s,value,label,x,y,accent=B.teal){
+    s.addShape(pres.shapes.RECTANGLE,{x,y,w:3.65,h:1.32,fill:{color:B.white},line:{color:B.lgray,width:0.75},shadow:ms()});
+    s.addShape(pres.shapes.RECTANGLE,{x,y,w:0.07,h:1.32,fill:{color:accent},line:{color:accent,width:0}});
+    s.addText(value,{x:x+0.2,y:y+0.12,w:3.35,h:0.7,fontSize:30,fontFace:'Arial',bold:true,color:accent,margin:0});
+    s.addText(label,{x:x+0.2,y:y+0.85,w:3.35,h:0.4,fontSize:9,fontFace:'Arial',color:B.gray,margin:0});
+  }
+  function eyebrow(s,txt,color=B.orange){
+    s.addText(txt,{x:0.5,y:0.68,w:W-1,h:0.28,fontSize:8.5,fontFace:'Arial',bold:true,charSpacing:4,color,margin:0});
+  }
+  function h1(s,txt,x,y,w,h,color=B.blue){
+    s.addText(txt,{x,y,w,h,fontSize:28,fontFace:'Arial',bold:true,color,lineSpacingMultiple:1.1,margin:0});
+  }
+  function body(s,txt,x,y,w,h,color=B.gray){
+    s.addText(txt,{x,y,w,h,fontSize:11,fontFace:'Arial',color,lineSpacingMultiple:1.6,margin:0});
+  }
+
+  // ══ SLIDE 1 — COVER ══
+  {
+    const s=pres.addSlide();s.background={color:B.white};
+    circles(s,W-0.3,0.3,B.cream,0.12);
+    circles(s,0,H,B.lgray,0.1);
+    logo(s,0.55,0.38);
+    s.addText('Performance Marketing\nPitch Deck',{x:0.55,y:0.95,w:6,h:1.85,fontSize:40,fontFace:'Arial',bold:true,color:B.blue,lineSpacingMultiple:1.06,margin:0});
+    s.addText(`Prepared for ${cn}`,{x:0.55,y:2.92,w:5.5,h:0.55,fontSize:18,fontFace:'Arial',bold:true,color:B.orange,margin:0});
+    s.addText(TCJ.descriptor,{x:0.55,y:3.6,w:5.3,h:0.9,fontSize:10.5,fontFace:'Arial',color:B.gray,lineSpacingMultiple:1.6,margin:0});
+    s.addShape(pres.shapes.LINE,{x:0.55,y:4.68,w:3.2,h:0,line:{color:B.lgray,width:1}});
+    const today=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+    s.addText(`Confidential · ${today}`,{x:0.55,y:4.82,w:5,h:0.28,fontSize:9,fontFace:'Arial',color:B.gray,margin:0});
+    // right panel — blue/teal split
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:6.9,y:0.45,w:5.93,h:6.6,fill:{color:B.blue},line:{color:B.blue,width:0},rectRadius:0.35});
+    s.addShape(pres.shapes.RECTANGLE,{x:6.9,y:4.0,w:5.93,h:3.05,fill:{color:B.teal},line:{color:B.teal,width:0}});
+    circles(s,W-0.2,H-0.2,B.white,0.08);
+    s.addText('Trusted for Growth',{x:7.1,y:4.25,w:5.5,h:0.65,fontSize:24,fontFace:'Arial',bold:true,color:B.white,align:'center',margin:0});
+    s.addText(TCJ.globalRevenue,{x:7.1,y:5.08,w:5.5,h:0.4,fontSize:10,fontFace:'Arial',color:B.sky,align:'center',margin:0});
+    s.addText('Transforming performance marketing\nin APAC through continuous growth.',{x:7.1,y:5.65,w:5.5,h:0.7,fontSize:10,fontFace:'Arial',color:B.sky,align:'center',lineSpacingMultiple:1.5,margin:0});
+    // Objectives on cover
+    if(objs.length>0){
+      s.addText('CLIENT OBJECTIVES',{x:0.55,y:5.55,w:5.8,h:0.26,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.blue,margin:0});
+      const objLabels=objs.map(o=>`${o.icon} ${o.label}`).join('   ·   ');
+      s.addText(objLabels,{x:0.55,y:5.86,w:5.8,h:0.38,fontSize:9,fontFace:'Arial',color:B.dark,margin:0});
+    }
+    footer(s,`Prepared for ${cn} · Confidential`);
+    s.addNotes(C.speakerNotes?.cover||`Open by establishing credibility. Tyroo CJ is the only affiliate platform with on-ground presence across India, SEA, China, US, and EU. CJ powers $26B in annual revenue globally. This pitch is built specifically for ${cn}.`);
+  }
+
+  // ══ SLIDE 2 — ABOUT ══
+  {
+    const s=pres.addSlide();s.background={color:B.white};logo(s);
+    eyebrow(s,'ABOUT TYROO | CJ');
+    h1(s,'The next-gen performance\nmarketing platform.',0.5,1.05,5.9,1.45);
+    body(s,TCJ.descriptor,0.5,2.62,5.8,0.78);
+    // right — blue top
+    s.addShape(pres.shapes.RECTANGLE,{x:7.15,y:0.5,w:5.68,h:3.12,fill:{color:B.blue},line:{color:B.blue,width:0}});
+    s.addText('CJ is part of Publicis Groupe',{x:7.35,y:0.7,w:5.2,h:0.32,fontSize:8.5,fontFace:'Arial',bold:true,charSpacing:2,color:B.sky,margin:0});
+    body(s,TCJ.cjGlobal,7.35,1.12,5.1,1.4,B.white);
+    s.addText('$26B',{x:7.35,y:2.65,w:2.3,h:0.72,fontSize:36,fontFace:'Arial',bold:true,color:B.cream,margin:0});
+    s.addText('annual revenue to advertisers globally',{x:9.8,y:2.85,w:2.85,h:0.42,fontSize:8.5,fontFace:'Arial',color:B.sky,margin:0});
+    // right — teal bottom
+    s.addShape(pres.shapes.RECTANGLE,{x:7.15,y:3.72,w:5.68,h:3.03,fill:{color:B.teal},line:{color:B.teal,width:0}});
+    circles(s,W-0.2,H-0.2,B.white,0.07);
+    s.addText('OUR PUBLISHER NETWORK',{x:7.35,y:3.9,w:5.2,h:0.28,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.sky,margin:0});
+    s.addText('15,000+',{x:7.35,y:4.25,w:5.2,h:0.9,fontSize:52,fontFace:'Arial',bold:true,color:B.white,margin:0});
+    body(s,'vetted publishers across content, coupon, cashback, social & comparison',7.35,5.28,5.1,0.65,B.sky);
+    // markets grid
+    s.addText('OUR MARKETS',{x:0.5,y:3.62,w:6,h:0.28,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.blue,margin:0});
+    TCJ.markets.forEach((m,i)=>{
+      const col=i%2,row=Math.floor(i/2),x=0.5+col*3.15,y=3.98+row*0.72;
+      s.addShape(pres.shapes.RECTANGLE,{x,y,w:3.0,h:0.55,fill:{color:B.offwhite},line:{color:B.lgray,width:0.75}});
+      s.addShape(pres.shapes.RECTANGLE,{x,y,w:0.06,h:0.55,fill:{color:i%2===0?B.blue:B.teal},line:{color:B.blue,width:0}});
+      s.addText(m,{x:x+0.15,y:y+0.1,w:2.75,h:0.36,fontSize:9.5,fontFace:'Arial',bold:true,color:B.dark,margin:0});
+    });
+    footer(s);s.addNotes(C.speakerNotes?.about||'Emphasise Publicis Groupe backing. Highlight warm publisher relationships — no cold outreach. $26B global proof point gives instant credibility.');
+  }
+
+  // ══ SLIDE 3 — MARKET BRIEF ══
+  {
+    const s=pres.addSlide();s.background={color:B.white};logo(s);
+    eyebrow(s,`MARKET BRIEF · ${(R.recommendedMarkets||[]).join(' · ').toUpperCase()}`);
+    h1(s,C.marketBrief?.headline||'The affiliate opportunity is now.',0.5,1.05,W-1,0.95);
+    body(s,C.marketBrief?.body||'',0.5,2.1,W-1,1.1);
+    const stats=[C.marketBrief?.stat1||{value:'$6B+',label:'Asia affiliate market 2025'},C.marketBrief?.stat2||{value:'3.5x',label:'Avg ROAS vs paid channels'},C.marketBrief?.stat3||{value:'72%',label:'Top APAC brands use affiliate as primary'}];
+    stats.forEach((st,i)=>stat(s,st.value,st.label,0.5+i*4.38,3.45,[B.blue,B.teal,B.burg][i]));
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:4.95,w:W-1,h:2.08,fill:{color:B.blue},line:{color:B.blue,width:0}});
+    s.addText(`"${C.whyNow||'Affiliate is the highest-ROI channel brands are underinvesting in. The window is now.'}"`,{x:0.85,y:5.08,w:W-1.7,h:1.82,fontSize:13,fontFace:'Arial',italic:true,color:B.white,lineSpacingMultiple:1.65,valign:'middle',margin:0});
+    footer(s);s.addNotes(C.speakerNotes?.market||'Walk through numbers. Pause on the stat most relevant to their category. The quote is your anchor — return to it when pricing comes up.');
+  }
+
+  // ══ SLIDE 4 — CLIENT CHALLENGE ══
+  {
+    const s=pres.addSlide();s.background={color:B.white};logo(s);
+    splitLeft(s,B.teal);
+    s.addText(`The\n${cn}\nChallenge`,{x:0.45,y:0.95,w:5.0,h:2.8,fontSize:32,fontFace:'Arial',bold:true,color:B.white,lineSpacingMultiple:1.08,margin:0});
+    body(s,C.clientChallenge?.heading||'Growth at scale demands a smarter channel.',0.45,3.85,5.0,1.2,B.sky);
+    s.addText('WHAT WE UNDERSTAND',{x:5.82,y:0.68,w:7.0,h:0.28,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.teal,margin:0});
+    body(s,C.clientChallenge?.body||'',5.82,1.05,7.0,1.05);
+    const pts=C.clientChallenge?.points||['Challenge 1','Challenge 2','Challenge 3'];
+    pts.forEach((p,i)=>{
+      s.addShape(pres.shapes.RECTANGLE,{x:5.82,y:2.35+i*1.38,w:7.0,h:1.2,fill:{color:B.offwhite},line:{color:B.lgray,width:0.75}});
+      s.addShape(pres.shapes.RECTANGLE,{x:5.82,y:2.35+i*1.38,w:0.07,h:1.2,fill:{color:[B.blue,B.orange,B.burg][i]},line:{color:B.blue,width:0}});
+      s.addText(String(i+1).padStart(2,'0'),{x:6.0,y:2.46+i*1.38,w:0.65,h:0.55,fontSize:20,fontFace:'Arial',bold:true,color:[B.blue,B.orange,B.burg][i],margin:0});
+      s.addText(p,{x:6.72,y:2.5+i*1.38,w:5.85,h:0.9,fontSize:10.5,fontFace:'Arial',color:B.dark,lineSpacingMultiple:1.5,margin:0});
+    });
+    s.addShape(pres.shapes.RECTANGLE,{x:5.82,y:6.45,w:7.0,h:0.65,fill:{color:B.blue},line:{color:B.blue,width:0}});
+    s.addText(`${cn} · ${R.category||'E-commerce'} · Affiliate maturity: ${R.affiliateMaturity||'Early'} · ${(R.recommendedMarkets||['India'])[0]}`,{x:6.02,y:6.56,w:6.6,h:0.38,fontSize:9,fontFace:'Arial',color:B.white,margin:0});
+    footer(s);s.addNotes(C.speakerNotes?.challenge||'This slide shows homework done. Read the heading, pause — let the client confirm or correct. Mirror their language when they respond.');
+  }
+
+  // ══ SLIDE 5 — SOLUTION ══
+  {
+    const s=pres.addSlide();s.background={color:B.white};logo(s);
+    eyebrow(s,'THE TYROO CJ SOLUTION');
+    h1(s,C.tyrooSolution?.heading||'Performance marketing built for your scale.',0.5,1.05,8.5,0.95);
+    body(s,C.tyrooSolution?.body||'',0.5,2.08,W-1,0.82);
+    const pts=C.tyrooSolution?.points||TCJ.whyUs.slice(0,3);
+    const pcols=[B.blue,B.teal,B.burg];
+    pts.forEach((p,i)=>{
+      s.addShape(pres.shapes.RECTANGLE,{x:0.5+i*4.28,y:3.08,w:4.08,h:2.68,fill:{color:pcols[i]},line:{color:B.white,width:0}});
+      s.addText(String(i+1),{x:0.7+i*4.28,y:3.22,w:0.65,h:0.6,fontSize:28,fontFace:'Arial',bold:true,color:B.white,margin:0});
+      s.addShape(pres.shapes.LINE,{x:0.7+i*4.28,y:3.88,w:3.5,h:0,line:{color:B.white,width:0.5,transparency:60}});
+      s.addText(p,{x:0.7+i*4.28,y:4.0,w:3.65,h:1.65,fontSize:10.5,fontFace:'Arial',color:B.white,lineSpacingMultiple:1.55,margin:0});
+    });
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:5.92,w:W-1,h:1.28,fill:{color:B.offwhite},line:{color:B.lgray,width:0.75}});
+    s.addText('WHY TYROO CJ OVER OTHERS',{x:0.7,y:6.02,w:8,h:0.26,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.orange,margin:0});
+    s.addText([{text:TCJ.whyUs[0],options:{bullet:true,breakLine:true}},{text:TCJ.whyUs[1],options:{bullet:true}}],{x:0.7,y:6.3,w:W-1.4,h:0.8,fontSize:9.5,fontFace:'Arial',color:B.dark,lineSpacingMultiple:1.5,paraSpaceAfter:3,margin:0});
+    footer(s);s.addNotes(C.speakerNotes?.solution||'Position each panel directly against the challenge slide. Ask: "Does this match what you\'re trying to solve?" Get micro-commitments before moving on.');
+  }
+
+  // ══ SLIDE 6 — PRODUCTS ══
+  {
+    const s=pres.addSlide();s.background={color:B.white};logo(s);
+    splitLeft(s,B.blue);
+    s.addText('OUR PRODUCTS',{x:0.45,y:0.65,w:5.0,h:0.28,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.sky,margin:0});
+    s.addText('Built for every\nstage of the\ncommerce journey.',{x:0.45,y:1.02,w:4.9,h:2.2,fontSize:24,fontFace:'Arial',bold:true,color:B.white,lineSpacingMultiple:1.1,margin:0});
+    const recP=C.recommendedProduct?.primary||'CJ Affiliate';
+    s.addShape(pres.shapes.RECTANGLE,{x:0.45,y:3.95,w:4.9,h:1.62,fill:{color:B.orange},line:{color:B.orange,width:0}});
+    s.addText('RECOMMENDED FOR YOU',{x:0.62,y:4.1,w:4.5,h:0.28,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.white,margin:0});
+    s.addText(recP,{x:0.62,y:4.45,w:4.5,h:0.5,fontSize:18,fontFace:'Arial',bold:true,color:B.white,margin:0});
+    body(s,C.recommendedProduct?.rationale||'',0.62,5.02,4.5,0.48,B.white);
+    Object.entries(TCJ.products).forEach(([name,desc],i)=>{
+      const isR=name===recP;
+      s.addShape(pres.shapes.RECTANGLE,{x:5.8,y:0.55+i*1.68,w:7.03,h:1.55,fill:{color:isR?B.blueBg:B.offwhite},line:{color:isR?B.blue:B.lgray,width:isR?1.5:0.75}});
+      if(isR)s.addShape(pres.shapes.RECTANGLE,{x:5.8,y:0.55+i*1.68,w:0.08,h:1.55,fill:{color:B.blue},line:{color:B.blue,width:0}});
+      s.addText(name,{x:6.02,y:0.7+i*1.68,w:5.5,h:0.42,fontSize:12,fontFace:'Arial',bold:true,color:isR?B.blue:B.dark,margin:0});
+      s.addText(desc,{x:6.02,y:1.15+i*1.68,w:6.5,h:0.88,fontSize:9,fontFace:'Arial',color:B.gray,lineSpacingMultiple:1.45,margin:0});
+      if(isR)s.addText('★ Recommended',{x:11.2,y:0.7+i*1.68,w:1.5,h:0.3,fontSize:7.5,fontFace:'Arial',bold:true,color:B.blue,align:'right',margin:0});
+    });
+    footer(s);s.addNotes(C.speakerNotes?.product||`Lead with ${recP}. Mention other products for breadth. Secondary: ${C.recommendedProduct?.secondary}.`);
+  }
+
+  // ══ SLIDE 7 — INTEGRATION ══
+  {
+    const s=pres.addSlide();s.background={color:B.white};logo(s);
+    eyebrow(s,'INTEGRATION & ONBOARDING');
+    const recI=C.recommendedIntegration?.primary||'Server-to-Server (S2S)';
+    h1(s,`Recommended: ${recI}`,0.5,1.05,9,0.75);
+    body(s,C.recommendedIntegration?.rationale||'',0.5,1.9,W-1,0.72);
+    Object.entries(TCJ.integrations).forEach(([name,desc],i)=>{
+      const isR=name.toLowerCase().includes(recI.toLowerCase().split(' ')[0].toLowerCase());
+      s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:2.85+i*0.73,w:W-1,h:0.62,fill:{color:isR?B.blueBg:B.offwhite},line:{color:isR?B.blue:B.lgray,width:isR?1.5:0.75}});
+      if(isR)s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:2.85+i*0.73,w:0.08,h:0.62,fill:{color:B.blue},line:{color:B.blue,width:0}});
+      s.addText(name,{x:0.72,y:2.93+i*0.73,w:3.1,h:0.38,fontSize:10.5,fontFace:'Arial',bold:true,color:isR?B.blue:B.dark,margin:0});
+      s.addText(desc.split('.')[0]+'.',{x:3.98,y:2.93+i*0.73,w:8.5,h:0.38,fontSize:9.5,fontFace:'Arial',color:B.gray,margin:0});
+      if(isR)s.addText('★ Recommended',{x:11.2,y:2.93+i*0.73,w:1.6,h:0.3,fontSize:8,fontFace:'Arial',bold:true,color:B.blue,align:'right',margin:0});
+    });
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:7.12,w:W-1,h:0.22,fill:{color:B.teal},line:{color:B.teal,width:0}});
+    s.addText(`Estimated go-live: ${C.recommendedIntegration?.timeline||'2–3 weeks'} · Dedicated integration support included`,{x:0.7,y:7.14,w:W-1.4,h:0.18,fontSize:9,fontFace:'Arial',color:B.white,margin:0});
+    footer(s);s.addNotes(C.speakerNotes?.integration||'Walk through the recommended integration. Emphasise go-live speed — fast time-to-value is a key differentiator vs competitors.');
+  }
+
+  // ══ SLIDE 8 — PRICING ══
+  {
+    const s=pres.addSlide();s.background={color:B.white};logo(s);
+    splitLeft(s,B.burg);
+    s.addText('PRICING\nMODELS',{x:0.45,y:0.82,w:4.9,h:1.85,fontSize:38,fontFace:'Arial',bold:true,color:B.white,lineSpacingMultiple:1.06,margin:0});
+    const recM=C.recommendedPricing?.model||'PoS';
+    s.addShape(pres.shapes.RECTANGLE,{x:0.45,y:3.55,w:4.9,h:0.52,fill:{color:B.white},line:{color:B.white,width:0}});
+    s.addText(`Recommended for ${cn}`,{x:0.62,y:3.62,w:4.5,h:0.3,fontSize:8.5,fontFace:'Arial',color:B.burg,bold:true,margin:0});
+    s.addText(recM,{x:0.45,y:4.18,w:4.9,h:0.68,fontSize:32,fontFace:'Arial',bold:true,color:B.white,margin:0});
+    body(s,C.recommendedPricing?.rationale||'',0.45,4.98,4.9,1.05,B.white);
+    Object.entries(TCJ.pricingModels).forEach(([name,desc],i)=>{
+      const isR=name.includes(recM.split(' ')[0]);
+      s.addShape(pres.shapes.RECTANGLE,{x:5.8,y:0.55+i*1.68,w:7.03,h:1.55,fill:{color:isR?B.burgBg:B.offwhite},line:{color:isR?B.burg:B.lgray,width:isR?1.5:0.75}});
+      s.addText(name.split('(')[0].trim(),{x:6.0,y:0.7+i*1.68,w:5,h:0.42,fontSize:12.5,fontFace:'Arial',bold:true,color:isR?B.burg:B.dark,margin:0});
+      s.addText(desc,{x:6.0,y:1.15+i*1.68,w:6.6,h:0.88,fontSize:9,fontFace:'Arial',color:B.gray,lineSpacingMultiple:1.45,margin:0});
+      if(isR)s.addText('★ Recommended',{x:11.2,y:0.7+i*1.68,w:1.5,h:0.3,fontSize:7.5,fontFace:'Arial',bold:true,color:B.burg,align:'right',margin:0});
+    });
+    s.addShape(pres.shapes.RECTANGLE,{x:5.8,y:7.1,w:7.03,h:0.25,fill:{color:B.burg},line:{color:B.burg,width:0}});
+    s.addText(`Commission: ${C.recommendedPricing?.commissionRange||'5–10%'} · Est. ROAS: ${C.recommendedPricing?.estimatedROAS||'4x+ in 90 days'}`,{x:6.0,y:7.12,w:6.6,h:0.2,fontSize:8.5,fontFace:'Arial',bold:true,color:B.white,margin:0});
+    footer(s);s.addNotes(C.speakerNotes?.pricing||'Lead with ROAS — this is a returns conversation, not a cost conversation. PoS = zero media risk. Be ready to discuss blended models.');
+  }
+
+  // ══ SLIDE 9 — NEXT STEPS ══
+  {
+    const s=pres.addSlide();s.background={color:B.white};
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:W,h:3.42,fill:{color:B.blue},line:{color:B.blue,width:0}});
+    circles(s,W-0.3,0.3,B.white,0.07);
+    logo(s,0.55,0.38);
+    s.addText(`Let's build something\nthat performs.`,{x:0.55,y:0.85,w:7.5,h:2.2,fontSize:36,fontFace:'Arial',bold:true,color:B.white,lineSpacingMultiple:1.06,margin:0});
+    s.addText('PROPOSED NEXT STEPS',{x:0.55,y:3.65,w:8,h:0.28,fontSize:8,fontFace:'Arial',bold:true,charSpacing:3,color:B.orange,margin:0});
+    const steps=C.nextSteps||['Schedule a 45-min discovery call','Share current channel performance data','Receive tailored commercial proposal within 5 business days'];
+    steps.forEach((step,i)=>{
+      s.addShape(pres.shapes.OVAL,{x:0.55,y:4.12+i*0.7,w:0.38,h:0.38,fill:{color:B.blue},line:{color:B.blue,width:0}});
+      s.addText(String(i+1),{x:0.55,y:4.12+i*0.7,w:0.38,h:0.38,fontSize:10,fontFace:'Arial',bold:true,color:B.white,align:'center',valign:'middle',margin:0});
+      s.addText(step,{x:1.05,y:4.15+i*0.7,w:7.5,h:0.36,fontSize:11,fontFace:'Arial',color:B.dark,margin:0});
+    });
+    s.addShape(pres.shapes.RECTANGLE,{x:0.55,y:6.32,w:8.4,h:0.92,fill:{color:B.offwhite},line:{color:B.lgray,width:0.75}});
+    s.addText('WHAT SUCCESS LOOKS LIKE',{x:0.75,y:6.42,w:8,h:0.24,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.blue,margin:0});
+    s.addText(C.caseStudyAngle||`A comparable brand in ${cn}'s category grew affiliate-attributed revenue 3x within 6 months using Tyroo CJ's PoS model.`,{x:0.75,y:6.68,w:8.0,h:0.5,fontSize:9.5,fontFace:'Arial',color:B.gray,lineSpacingMultiple:1.4,margin:0});
+    // contact card
+    s.addShape(pres.shapes.RECTANGLE,{x:9.18,y:0.55,w:3.65,h:6.68,fill:{color:B.teal},line:{color:B.teal,width:0}});
+    circles(s,W-0.15,H-0.15,B.white,0.07);
+    s.addText('GET IN TOUCH',{x:9.38,y:0.78,w:3.2,h:0.28,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.sky,margin:0});
+    [{t:'Tyroo | CJ',sz:14,bold:true,c:B.white,y:1.22},{t:'Business Development',sz:9.5,bold:false,c:'A6DDEE',y:1.62},{t:'bd@tyroocj.com',sz:9.5,bold:false,c:B.white,y:2.18},{t:'tyroocj.com',sz:9.5,bold:false,c:'A6DDEE',y:2.55},{t:'India · SEA · China',sz:9,bold:false,c:B.sky,y:3.1},{t:'US · EU · APAC',sz:9,bold:false,c:B.sky,y:3.45}].forEach(row=>{
+      s.addText(row.t,{x:9.38,y:row.y,w:3.2,h:0.38,fontSize:row.sz,fontFace:'Arial',bold:row.bold,color:row.c,margin:0});
+    });
+    footer(s,`Tyroo | CJ × ${cn} · Confidential`);
+    s.addNotes(C.speakerNotes?.nextsteps||'Close with energy. Restate core value: pay only for performance. Book the follow-up before leaving. Leave the deck and contact details.');
+  }
+
+  _dl=async()=>await pres.writeFile({fileName:`TyrooCJ_Pitch_${cn.replace(/\s+/g,'_')}.pptx`});
+
+  return [
+    {name:'Cover Slide',desc:`Branded opening — Tyroo CJ × ${cn}`},
+    {name:'About Tyroo | CJ',desc:'Platform overview, CJ global scale & publisher network'},
+    {name:'Market Brief',desc:`Affiliate landscape in ${(R.recommendedMarkets||['APAC']).join(', ')}`},
+    {name:'Client Challenge',desc:`${cn}'s growth challenges & business context`},
+    {name:'Tyroo CJ Solution',desc:'Tailored solution mapped to client needs'},
+    {name:'Products & Capabilities',desc:`${C.recommendedProduct?.primary||'CJ Affiliate'} recommended — full suite overview`},
+    {name:'Integration & Onboarding',desc:`${C.recommendedIntegration?.primary||'S2S'} · Go-live ${C.recommendedIntegration?.timeline||'2–3 weeks'}`},
+    {name:'Pricing Model',desc:`${C.recommendedPricing?.model||'PoS'} · ${C.recommendedPricing?.commissionRange||'5–10%'} · Est. ${C.recommendedPricing?.estimatedROAS||'4x+'} ROAS`},
+    {name:'Next Steps & Close',desc:'Proposed actions, case study angle & contact details'},
+  ];
+}
+</script>
+</body>
+</html>
