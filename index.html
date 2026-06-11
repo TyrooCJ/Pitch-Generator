@@ -5,175 +5,217 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Tyroo CJ · Pitch Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PptxGenJS/3.12.0/pptxgen.bundle.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script>
+function getPptxGen(){
+  if(typeof pptxgen!=='undefined') return pptxgen;
+  if(typeof PptxGenJS!=='undefined') return PptxGenJS;
+  throw new Error('PptxGenJS failed to load — please refresh.');
+}
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --blue:#214295;--teal:#025450;--orange:#F97316;--burg:#6E1B35;
-  --sky:#A6DDEE;--cream:#FDBBA0;--white:#FFFFFF;--offwhite:#F8F9FC;
-  --border:#E2E8F0;--text:#1A2035;--muted:#64748B;
+  --sky:#A6DDEE;--cream:#FDBBA0;--white:#FFFFFF;--offwhite:#F4F6FB;
+  --border:#E2E8F0;--text:#0F1628;--muted:#64748B;
+  --glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.14);
 }
-body{font-family:'Outfit',Arial,sans-serif;background:var(--offwhite);color:var(--text);min-height:100vh;}
-nav{background:var(--white);border-bottom:2px solid var(--blue);display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 1px 12px rgba(33,66,149,.08);}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--offwhite);color:var(--text);min-height:100vh;}
+
+/* NAV */
+nav{background:rgba(10,14,40,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:68px;position:sticky;top:0;z-index:200;}
+.nav-left{display:flex;align-items:center;gap:1.2rem;}
 .nav-logo{display:flex;align-items:center;gap:.5rem;}
-.nav-logo-sub{font-size:.72rem;color:var(--muted);}
-.nav-badge{font-size:.68rem;font-weight:600;color:var(--teal);border:1.5px solid var(--teal);padding:.2rem .7rem;border-radius:99px;letter-spacing:.06em;text-transform:uppercase;}
-.hero{background:linear-gradient(135deg,var(--blue) 0%,#1a3580 55%,var(--teal) 100%);color:var(--white);text-align:center;padding:4.5rem 1.5rem 3.5rem;position:relative;overflow:hidden;}
-.hero::before{content:'';position:absolute;bottom:-80px;right:-80px;width:360px;height:360px;border-radius:50%;border:40px solid rgba(255,255,255,.05);pointer-events:none;}
-.hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:210px;height:210px;border-radius:50%;border:28px solid rgba(255,255,255,.04);pointer-events:none;}
-.hero-eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--cream);margin-bottom:1rem;}
-.hero h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:800;line-height:1.1;margin-bottom:1rem;}
-.hero h1 span{color:var(--cream);}
-.hero p{font-size:.97rem;opacity:.82;max-width:460px;margin:0 auto 2.5rem;line-height:1.7;font-weight:300;}
-.search-outer{max-width:640px;margin:0 auto;padding:0 1rem;}
-.search-box{display:flex;align-items:center;background:var(--white);border-radius:12px;padding:.45rem .45rem .45rem 1.1rem;gap:.6rem;box-shadow:0 4px 24px rgba(0,0,0,.18);}
-.search-box svg{color:var(--muted);flex-shrink:0;}
-#clientInput{flex:1;border:none;outline:none;font-family:'Outfit',Arial,sans-serif;font-size:.97rem;color:var(--text);min-width:0;}
-#clientInput::placeholder{color:var(--muted);}
-#generateBtn{background:var(--orange);color:var(--white);border:none;border-radius:9px;padding:.6rem 1.4rem;font-family:'Outfit',Arial,sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s,transform .1s;flex-shrink:0;}
-#generateBtn:hover{background:#ea6a0a;transform:translateY(-1px);}
-#generateBtn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-.chips{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;margin-top:1.2rem;padding:0 1rem;}
-.chip{font-size:.72rem;font-weight:500;color:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:.25rem .75rem;}
+.nav-logo-sub{font-size:.65rem;color:rgba(255,255,255,.3);font-family:'Montserrat',sans-serif;font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
+.nav-right{display:flex;align-items:center;gap:1rem;}
+.nav-badge{font-size:.6rem;font-weight:700;color:var(--teal);border:1px solid rgba(2,84,80,.4);padding:.22rem .7rem;border-radius:99px;letter-spacing:.12em;text-transform:uppercase;background:rgba(2,84,80,.1);}
+.loc-wrap{position:relative;display:flex;align-items:center;}
+.loc-select{appearance:none;-webkit-appearance:none;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:9px;color:rgba(255,255,255,.88);font-family:'Montserrat',sans-serif;font-size:.7rem;font-weight:700;padding:.38rem 2.2rem .38rem 2rem;cursor:pointer;outline:none;transition:all .15s;letter-spacing:.04em;}
+.loc-select:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.3);}
+.loc-select option{background:#111827;color:#fff;}
+.loc-flag{position:absolute;left:.6rem;top:50%;transform:translateY(-50%);font-size:.9rem;pointer-events:none;}
+.loc-arrow{position:absolute;right:.55rem;top:50%;transform:translateY(-50%);pointer-events:none;color:rgba(255,255,255,.4);font-size:.55rem;}
 
-/* ── AUTOCOMPLETE ── */
-.search-outer{position:relative;}
-.ac-dropdown{
-  position:absolute;
-  top:calc(100% + 6px);
-  left:1rem; right:1rem;
-  background:var(--white);
-  border:1px solid var(--border);
-  border-radius:12px;
-  box-shadow:0 8px 32px rgba(0,0,0,.18);
-  overflow:hidden;
-  z-index:200;
-  display:none;
-}
+/* HERO */
+.hero{background:#07091f;background-image:radial-gradient(ellipse 80% 60% at 15% 40%,rgba(33,66,149,.5) 0%,transparent 60%),radial-gradient(ellipse 55% 50% at 85% 65%,rgba(2,84,80,.4) 0%,transparent 55%),radial-gradient(ellipse 45% 40% at 55% 5%,rgba(249,115,22,.15) 0%,transparent 50%);color:var(--white);text-align:center;padding:5.5rem 1.5rem 4.5rem;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:55px 55px;mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 20%,transparent 100%);pointer-events:none;}
+.hero-orb1{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(33,66,149,.28),transparent 70%);top:-280px;left:-120px;pointer-events:none;}
+.hero-orb2{position:absolute;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle,rgba(2,84,80,.22),transparent 70%);bottom:-180px;right:-80px;pointer-events:none;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:.45rem;font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--orange);margin-bottom:1.6rem;padding:.32rem 1rem;background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.22);border-radius:99px;}
+.hero h1{font-family:'Montserrat',sans-serif;font-size:clamp(2.4rem,6vw,4.2rem);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:1.4rem;background:linear-gradient(155deg,#fff 0%,rgba(255,255,255,.7) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--cream),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:.97rem;color:rgba(255,255,255,.5);max-width:460px;margin:0 auto 3rem;line-height:1.8;font-weight:300;}
+
+/* SEARCH */
+.search-outer{max-width:660px;margin:0 auto;padding:0 1rem;position:relative;}
+.search-box{display:flex;align-items:center;background:rgba(255,255,255,.97);border-radius:18px;padding:.55rem .55rem .55rem 1.2rem;gap:.7rem;box-shadow:0 12px 48px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.08);}
+.search-box svg{color:#94a3b8;flex-shrink:0;}
+#clientInput{flex:1;border:none;outline:none;font-family:'Montserrat',sans-serif;font-size:.93rem;font-weight:500;color:var(--text);min-width:0;background:transparent;}
+#clientInput::placeholder{color:#94a3b8;font-weight:400;}
+#generateBtn{background:linear-gradient(135deg,var(--orange) 0%,#dc4f0a 100%);color:var(--white);border:none;border-radius:13px;padding:.75rem 1.6rem;font-family:'Montserrat',sans-serif;font-size:.8rem;font-weight:800;cursor:pointer;white-space:nowrap;letter-spacing:.04em;transition:all .2s;flex-shrink:0;box-shadow:0 6px 20px rgba(249,115,22,.45);}
+#generateBtn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(249,115,22,.55);}
+#generateBtn:active{transform:translateY(0);}
+#generateBtn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* CHIPS */
+.chips{display:flex;justify-content:center;gap:.42rem;flex-wrap:wrap;margin-top:1.6rem;padding:0 1rem;}
+.chip{font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:.07em;color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.1);border-radius:99px;padding:.26rem .78rem;background:rgba(255,255,255,.04);}
+
+/* AUTOCOMPLETE */
+.ac-dropdown{position:absolute;top:calc(100% + 9px);left:1rem;right:1rem;background:#fff;border:1px solid #e8edf5;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.18);overflow:hidden;z-index:300;display:none;}
 .ac-dropdown.open{display:block;}
-.ac-item{
-  display:flex;align-items:center;gap:.65rem;
-  padding:.62rem 1rem;
-  cursor:pointer;
-  transition:background .12s;
-  border-bottom:1px solid var(--border);
-}
+.ac-item{display:flex;align-items:center;gap:.75rem;padding:.72rem 1.1rem;cursor:pointer;transition:background .1s;border-bottom:1px solid #f1f5f9;}
 .ac-item:last-child{border-bottom:none;}
-.ac-item:hover,.ac-item.focused{background:var(--offwhite);}
-.ac-logo{
-  width:28px;height:28px;border-radius:6px;
-  background:var(--blue);
-  display:flex;align-items:center;justify-content:center;
-  font-size:.7rem;font-weight:800;color:#fff;
-  flex-shrink:0;letter-spacing:-.02em;
-}
-.ac-name{font-size:.9rem;font-weight:600;color:var(--text);}
-.ac-cat{font-size:.72rem;color:var(--muted);margin-left:auto;white-space:nowrap;}
-.ac-empty{padding:.8rem 1rem;font-size:.85rem;color:var(--muted);font-style:italic;}
+.ac-item:hover,.ac-item.focused{background:#f5f8ff;}
+.ac-logo{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;color:#fff;flex-shrink:0;font-family:'Montserrat',sans-serif;letter-spacing:-.02em;}
+.ac-name{font-size:.88rem;font-weight:700;color:var(--text);font-family:'Montserrat',sans-serif;}
+.ac-cat{font-size:.68rem;color:var(--muted);margin-left:auto;white-space:nowrap;}
+.ac-empty{padding:.9rem 1.1rem;font-size:.82rem;color:var(--muted);font-style:italic;}
 
-/* ── OBJECTIVES ── */
-.objectives-wrap{max-width:640px;margin:.85rem auto 0;padding:0 1rem;}
-.objectives-label{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:.5rem;text-align:left;}
-.objectives-grid{display:flex;flex-wrap:wrap;gap:.45rem;}
-.obj-pill{
-  display:flex;align-items:center;gap:.38rem;
-  background:rgba(255,255,255,.1);
-  border:1.5px solid rgba(255,255,255,.22);
-  border-radius:99px;
-  padding:.32rem .85rem;
-  cursor:pointer;
-  transition:background .15s,border-color .15s,transform .1s;
-  user-select:none;
-}
-.obj-pill:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4);}
-.obj-pill.selected{
-  background:var(--orange);
-  border-color:var(--orange);
-  transform:translateY(-1px);
-}
-.obj-pill-icon{font-size:.82rem;line-height:1;}
-.obj-pill-label{font-size:.75rem;font-weight:600;color:rgba(255,255,255,.88);}
+/* OBJECTIVES */
+.objectives-wrap{max-width:660px;margin:1.4rem auto 0;padding:0 1rem;}
+.objectives-label{font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.65rem;text-align:left;}
+.objectives-grid{display:flex;flex-wrap:wrap;gap:.4rem;}
+.obj-pill{display:flex;align-items:center;gap:.38rem;background:var(--glass);border:1px solid var(--glass-border);border-radius:99px;padding:.32rem .9rem;cursor:pointer;transition:all .15s;user-select:none;}
+.obj-pill:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.32);}
+.obj-pill.selected{background:var(--orange);border-color:var(--orange);transform:translateY(-1px);box-shadow:0 4px 14px rgba(249,115,22,.38);}
+.obj-pill-icon{font-size:.78rem;line-height:1;}
+.obj-pill-label{font-family:'Montserrat',sans-serif;font-size:.65rem;font-weight:700;color:rgba(255,255,255,.78);letter-spacing:.02em;}
 .obj-pill.selected .obj-pill-label{color:#fff;}
-.obj-req-hint{font-size:.7rem;color:rgba(255,255,255,.4);margin-top:.5rem;text-align:left;}
+.obj-req-hint{font-family:'Montserrat',sans-serif;font-size:.62rem;color:rgba(255,255,255,.3);margin-top:.6rem;text-align:left;}
 
-/* ── CROSS-BORDER SECTION ── */
-.cb-wrap{max-width:640px;margin:.9rem auto 0;padding:0 1rem;}
+/* CROSS-BORDER */
+.cb-wrap{max-width:660px;margin:1rem auto 0;padding:0 1rem;}
 .cb-row{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;}
-.cb-toggle-label{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);}
-.toggle-track{width:44px;height:24px;border-radius:99px;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.3);cursor:pointer;position:relative;transition:background .2s,border-color .2s;flex-shrink:0;}
-.toggle-track.on{background:var(--orange);border-color:var(--orange);}
-.toggle-thumb{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.cb-toggle-label{font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.38);}
+.toggle-track{width:46px;height:26px;border-radius:99px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);cursor:pointer;position:relative;transition:all .2s;flex-shrink:0;}
+.toggle-track.on{background:var(--orange);border-color:var(--orange);box-shadow:0 0 14px rgba(249,115,22,.4);}
+.toggle-thumb{width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:transform .2s;box-shadow:0 2px 8px rgba(0,0,0,.25);}
 .toggle-track.on .toggle-thumb{transform:translateX(20px);}
-.cb-options{display:none;width:100%;margin-top:.75rem;}
+.cb-options{display:none;width:100%;margin-top:.85rem;}
 .cb-options.open{display:block;}
-.cb-sub-label{font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:.42rem;}
-.cb-geos{display:flex;flex-wrap:wrap;gap:.38rem;margin-bottom:.65rem;}
-.geo-pill{font-size:.72rem;font-weight:600;color:rgba(255,255,255,.78);border:1.5px solid rgba(255,255,255,.22);border-radius:99px;padding:.26rem .75rem;cursor:pointer;transition:background .13s,border-color .13s;background:rgba(255,255,255,.08);}
-.geo-pill:hover{background:rgba(255,255,255,.18);}
-.geo-pill.selected{background:var(--teal);border-color:var(--teal);color:#fff;}
-.cb-ai-row{display:flex;align-items:center;gap:.6rem;margin-top:.55rem;padding:.55rem .75rem;background:rgba(255,255,255,.07);border-radius:8px;border:1px solid rgba(255,255,255,.12);}
-.ai-toggle-track{width:34px;height:20px;border-radius:99px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
+.cb-sub-label{font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.48rem;}
+.cb-geos{display:flex;flex-wrap:wrap;gap:.38rem;margin-bottom:.72rem;}
+.geo-pill{font-family:'Montserrat',sans-serif;font-size:.65rem;font-weight:700;color:rgba(255,255,255,.68);border:1px solid rgba(255,255,255,.15);border-radius:99px;padding:.28rem .78rem;cursor:pointer;transition:all .13s;background:var(--glass);}
+.geo-pill:hover{background:rgba(255,255,255,.14);}
+.geo-pill.selected{background:var(--teal);border-color:var(--teal);color:#fff;box-shadow:0 4px 12px rgba(2,84,80,.38);}
+.cb-ai-row{display:flex;align-items:center;gap:.65rem;margin-top:.55rem;padding:.65rem .9rem;background:rgba(255,255,255,.04);border-radius:11px;border:1px solid rgba(255,255,255,.09);}
+.ai-toggle-track{width:36px;height:20px;border-radius:99px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
 .ai-toggle-track.on{background:var(--teal);border-color:var(--teal);}
-.ai-toggle-thumb{width:14px;height:14px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;}
-.ai-toggle-track.on .ai-toggle-thumb{transform:translateX(14px);}
-.ai-label-text{font-size:.72rem;color:rgba(255,255,255,.6);line-height:1.4;}
-.ai-label-text strong{color:rgba(255,255,255,.88);}
-.ai-result{display:none;margin-top:.5rem;font-size:.72rem;color:rgba(255,255,255,.75);font-style:italic;padding:.4rem .6rem;background:rgba(0,212,100,.1);border-radius:6px;border-left:2px solid var(--teal);}
+.ai-toggle-thumb{width:14px;height:14px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:transform .2s;}
+.ai-toggle-track.on .ai-toggle-thumb{transform:translateX(16px);}
+.ai-label-text{font-size:.68rem;color:rgba(255,255,255,.45);line-height:1.5;}
+.ai-label-text strong{color:rgba(255,255,255,.8);}
+.ai-result{display:none;margin-top:.55rem;font-size:.7rem;color:rgba(255,255,255,.7);font-style:italic;padding:.48rem .72rem;background:rgba(2,84,80,.15);border-radius:9px;border-left:2px solid var(--teal);}
 .ai-result.visible{display:block;}
 
-.body{max-width:720px;margin:2.5rem auto 4rem;padding:0 1.5rem;}
+/* BODY */
+.body{max-width:740px;margin:3.5rem auto 6rem;padding:0 1.5rem;}
 #status{display:none;}
-.status-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.8rem;position:relative;overflow:hidden;box-shadow:0 2px 16px rgba(33,66,149,.07);}
-.status-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--teal),var(--orange),var(--burg));background-size:300% 100%;animation:shimmer 2.5s linear infinite;}
+.status-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:2.2rem;position:relative;overflow:hidden;box-shadow:0 8px 40px rgba(33,66,149,.09);}
+.status-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--teal),var(--orange),var(--burg));background-size:300% 100%;animation:shimmer 2s linear infinite;}
 @keyframes shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
-.status-title{font-weight:700;color:var(--blue);margin-bottom:1.2rem;font-size:.88rem;letter-spacing:.05em;text-transform:uppercase;}
-.steps{list-style:none;display:flex;flex-direction:column;gap:.55rem;}
-.step{display:flex;align-items:center;gap:.7rem;font-size:.86rem;color:var(--muted);transition:color .3s;}
+.status-title{font-family:'Montserrat',sans-serif;font-weight:800;color:var(--blue);margin-bottom:1.5rem;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;}
+.steps{list-style:none;display:flex;flex-direction:column;gap:.65rem;}
+.step{display:flex;align-items:center;gap:.78rem;font-size:.84rem;color:var(--muted);transition:color .3s;}
 .step.active{color:var(--text);font-weight:600;}
 .step.done{color:var(--teal);font-weight:500;}
-.step-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .3s;}
-.step.active .step-dot{background:var(--orange);}
+.step-dot{width:9px;height:9px;border-radius:50%;background:var(--border);flex-shrink:0;transition:all .3s;}
+.step.active .step-dot{background:var(--orange);box-shadow:0 0 10px rgba(249,115,22,.55);}
 .step.done .step-dot{background:var(--teal);}
 #error{display:none;}
-.error-card{background:#FFF5F5;border:1px solid #FCA5A5;border-radius:12px;padding:1rem 1.2rem;font-size:.85rem;color:#DC2626;}
+.error-card{background:#FFF5F5;border:1px solid #FCA5A5;border-radius:14px;padding:1.1rem 1.4rem;font-size:.84rem;color:#DC2626;}
 #result{display:none;}
-.result-card{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(33,66,149,.1);}
-.result-top{background:var(--blue);color:var(--white);padding:1.5rem 1.8rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
-.result-title{font-size:1.05rem;font-weight:700;}
-.result-meta{font-size:.75rem;opacity:.7;margin-top:.2rem;font-weight:300;}
-.dl-btn{display:flex;align-items:center;gap:.45rem;background:var(--orange);color:var(--white);border:none;border-radius:9px;padding:.6rem 1.1rem;font-family:'Outfit',Arial,sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;flex-shrink:0;transition:background .15s;}
-.dl-btn:hover{background:#ea6a0a;}
-.result-body{padding:1.5rem 1.8rem;}
-.slides-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.7rem;margin-bottom:1.2rem;}
-.slide-chip{background:var(--offwhite);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;border-left:3px solid var(--blue);}
-.slide-chip-num{font-size:.68rem;font-weight:700;color:var(--blue);margin-bottom:.2rem;text-transform:uppercase;letter-spacing:.04em;}
-.slide-chip-name{font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:.18rem;}
-.slide-chip-desc{font-size:.72rem;color:var(--muted);line-height:1.4;}
-.result-note{font-size:.78rem;color:var(--muted);border-top:1px solid var(--border);padding-top:.9rem;display:flex;align-items:center;gap:.4rem;}
-footer{text-align:center;font-size:.73rem;color:var(--muted);padding:2rem;border-top:1px solid var(--border);}
-footer strong{color:var(--blue);}
+.result-card{background:var(--white);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 12px 48px rgba(33,66,149,.14);}
+.result-top{background:linear-gradient(135deg,#0e1a4a 0%,var(--blue) 45%,var(--teal) 100%);color:var(--white);padding:2rem 2.2rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
+.result-title{font-family:'Montserrat',sans-serif;font-size:1.12rem;font-weight:800;letter-spacing:-.01em;}
+.result-meta{font-size:.7rem;opacity:.6;margin-top:.32rem;font-weight:400;}
+.dl-btn{display:flex;align-items:center;gap:.48rem;background:linear-gradient(135deg,var(--orange),#dc4f0a);color:var(--white);border:none;border-radius:12px;padding:.72rem 1.3rem;font-family:'Montserrat',sans-serif;font-size:.76rem;font-weight:800;cursor:pointer;flex-shrink:0;letter-spacing:.04em;box-shadow:0 6px 20px rgba(249,115,22,.45);transition:all .2s;}
+.dl-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(249,115,22,.55);}
+.result-body{padding:2rem 2.2rem;}
+.slides-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:.8rem;margin-bottom:1.5rem;}
+.slide-chip{background:var(--offwhite);border:1px solid var(--border);border-radius:13px;padding:1rem 1.1rem;border-left:3px solid var(--blue);transition:all .15s;}
+.slide-chip:hover{border-left-color:var(--orange);transform:translateY(-2px);box-shadow:0 4px 16px rgba(33,66,149,.08);}
+.slide-chip-num{font-family:'Montserrat',sans-serif;font-size:.58rem;font-weight:700;color:var(--blue);margin-bottom:.28rem;text-transform:uppercase;letter-spacing:.08em;}
+.slide-chip-name{font-family:'Montserrat',sans-serif;font-size:.8rem;font-weight:800;color:var(--text);margin-bottom:.22rem;}
+.slide-chip-desc{font-size:.7rem;color:var(--muted);line-height:1.5;}
+.result-note{font-size:.73rem;color:var(--muted);border-top:1px solid var(--border);padding-top:1.1rem;display:flex;align-items:center;gap:.45rem;}
+
+/* ── CONTACTS PANEL ── */
+.contacts-wrap{max-width:100%;margin:1.5rem 0 0;padding:0;display:none;}
+.contacts-wrap.open{display:block;}
+.contacts-card{background:var(--white);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(33,66,149,.1);}
+.contacts-top{background:linear-gradient(135deg,var(--teal),#014038);color:var(--white);padding:1.4rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.contacts-title{font-family:'Montserrat',sans-serif;font-size:1rem;font-weight:800;}
+.contacts-meta{font-size:.7rem;opacity:.6;margin-top:.2rem;}
+.find-btn{display:flex;align-items:center;gap:.45rem;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:var(--white);border-radius:10px;padding:.55rem 1.1rem;font-family:'Montserrat',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.find-btn:hover{background:rgba(255,255,255,.25);}
+.find-btn:disabled{opacity:.4;cursor:not-allowed;}
+.contacts-body{padding:1.5rem 2rem;}
+.contacts-grid{display:flex;flex-direction:column;gap:.65rem;}
+.contact-row{display:flex;align-items:center;gap:1rem;padding:.85rem 1rem;background:var(--offwhite);border:1px solid var(--border);border-radius:12px;transition:all .15s;}
+.contact-row:hover{border-color:var(--teal);transform:translateY(-1px);}
+.contact-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:.82rem;font-weight:800;color:#fff;flex-shrink:0;}
+.contact-info{flex:1;min-width:0;}
+.contact-name{font-family:'Montserrat',sans-serif;font-size:.88rem;font-weight:700;color:var(--text);}
+.contact-title{font-size:.72rem;color:var(--muted);margin-top:.12rem;}
+.contact-company{font-size:.68rem;color:var(--teal);font-weight:600;margin-top:.08rem;}
+.contact-actions{display:flex;gap:.45rem;flex-shrink:0;}
+.contact-btn{font-size:.68rem;font-weight:600;font-family:'Montserrat',sans-serif;padding:.28rem .65rem;border-radius:7px;cursor:pointer;border:none;transition:all .15s;text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;}
+.contact-btn.email{background:#EEF2FF;color:var(--blue);}
+.contact-btn.email:hover{background:var(--blue);color:#fff;}
+.contact-btn.linkedin{background:#E8F5F0;color:var(--teal);}
+.contact-btn.linkedin:hover{background:var(--teal);color:#fff;}
+.contact-btn.phone{background:#FFF5F2;color:var(--burg);}
+.contact-btn.phone:hover{background:var(--burg);color:#fff;}
+.contacts-empty{text-align:center;padding:2rem;color:var(--muted);font-size:.85rem;}
+.contacts-loading{text-align:center;padding:1.5rem;color:var(--muted);font-size:.85rem;}
+.credits-note{font-size:.68rem;color:var(--muted);margin-top:.85rem;text-align:center;}
+.no-results-tip{background:var(--offwhite);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;font-size:.78rem;color:var(--muted);margin-top:.65rem;line-height:1.6;}
+
+footer{text-align:center;font-size:.7rem;color:var(--muted);padding:2.5rem;border-top:1px solid var(--border);}
+footer strong{color:var(--blue);font-family:'Montserrat',sans-serif;font-weight:700;}
+
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="nav-logo">
-    <svg width="88" height="28" viewBox="0 0 88 28" fill="none">
-      <text x="0" y="22" font-family="Arial" font-size="20" font-weight="900" font-style="italic" fill="#214295">tyroo</text>
-      <line x1="62" y1="4" x2="62" y2="24" stroke="#214295" stroke-width="1.5"/>
-      <circle cx="76" cy="14" r="10" stroke="#214295" stroke-width="2"/>
-      <text x="71" y="19" font-family="Arial" font-size="12" font-weight="800" fill="#214295">CJ</text>
-    </svg>
-    <span class="nav-logo-sub">· Pitch Studio</span>
+  <div class="nav-left">
+    <div class="nav-logo">
+      <svg width="88" height="28" viewBox="0 0 88 28" fill="none">
+        <text x="0" y="22" font-family="Arial" font-size="20" font-weight="900" font-style="italic" fill="#214295">tyroo</text>
+        <line x1="62" y1="4" x2="62" y2="24" stroke="#214295" stroke-width="1.5"/>
+        <circle cx="76" cy="14" r="10" stroke="#214295" stroke-width="2"/>
+        <text x="71" y="19" font-family="Arial" font-size="12" font-weight="800" fill="#214295">CJ</text>
+      </svg>
+    </div>
+    <span class="nav-logo-sub">Pitch Studio</span>
   </div>
-  <div class="nav-badge">Internal</div>
+  <div class="nav-right">
+    <div class="loc-wrap">
+      <span class="loc-flag" id="locFlag">🌏</span>
+      <select class="loc-select" id="locSelect" onchange="onLocChange()">
+        <option value="India">India</option>
+        <option value="China">China</option>
+        <option value="SEA">SEA</option>
+      </select>
+      <span class="loc-arrow">▼</span>
+    </div>
+    <div class="nav-badge">Internal</div>
+  </div>
 </nav>
 
 <section class="hero">
-  <div class="hero-eyebrow">AI-Powered Sales Intelligence</div>
-  <h1>Generate a <span>client-specific</span><br/>pitch deck in 60 seconds</h1>
-  <p>Enter a client name. We research them, build a market brief, and output a fully customised PowerPoint with speaker notes — in Tyroo CJ brand.</p>
+  <div class="hero-orb1"></div>
+  <div class="hero-orb2"></div>
+  <div class="hero-eyebrow">✦ AI-Powered Sales Intelligence</div>
+  <h1>Generate a <em>client-specific</em><br/>pitch deck in 60 seconds</h1>
+  <p class="hero-sub">Type a client name. We research them live, build a geo-specific market brief, and output a fully customised PowerPoint with speaker notes — in Tyroo CJ brand.</p>
   <div class="search-outer">
     <div class="search-box">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -230,32 +272,119 @@ footer strong{color:var(--blue);}
     <div class="status-card">
       <div class="status-title">Building your pitch deck</div>
       <ul class="steps">
-        <li class="step" id="s1"><div class="step-dot"></div>Researching client via web search…</li>
-        <li class="step" id="s2"><div class="step-dot"></div>Analysing category, markets & affiliate maturity…</li>
+        <li class="step" id="s1"><div class="step-dot"></div>Initialising…</li>
+        <li class="step" id="s2"><div class="step-dot"></div>Researching client & generating pitch content…</li>
         <li class="step" id="s3"><div class="step-dot"></div>Writing slide content & speaker notes…</li>
-        <li class="step" id="s4"><div class="step-dot"></div>Tailoring pricing model & integration…</li>
-        <li class="step" id="s5"><div class="step-dot"></div>Assembling branded PowerPoint file…</li>
+        <li class="step" id="s4"><div class="step-dot"></div>Assembling branded PowerPoint…</li>
+        <li class="step" id="s5"><div class="step-dot"></div>Finalising deck…</li>
       </ul>
     </div>
   </div>
   <div id="result"></div>
+
+  <!-- CONTACTS PANEL -->
+  <div class="contacts-wrap" id="contactsWrap">
+    <div class="contacts-card">
+      <div class="contacts-top">
+        <div>
+          <div class="contacts-title">👤 Find Affiliate Contacts</div>
+          <div class="contacts-meta" id="contactsMeta">Affiliate · Partnerships · Growth decision makers</div>
+        </div>
+        <button class="find-btn" id="findBtn" onclick="findContacts()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Find Contacts
+        </button>
+      </div>
+      <div class="contacts-body">
+        <div id="contactsContent">
+          <div class="contacts-empty">Click "Find Contacts" to search for affiliate decision makers at this company.</div>
+        </div>
+        <div class="credits-note">Powered by Apollo.io · Each search uses ~5 API credits</div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<footer><strong>Tyroo | CJ</strong> Pitch Studio · Internal Use Only · Powered by Claude AI + CJ Global Platform</footer>
+<footer><strong>Tyroo | CJ</strong> Pitch Studio · Internal Use Only · Powered by Claude API + CJ Global Platform · 100% static · GitHub Pages</footer>
 
 <script>
 // ─── BRAND PALETTE (exact from brand book) ───
 
-// All AI calls go through Netlify function — key is never in browser
-async function callClaude(systemPrompt, userPrompt, maxTokens=3000, useWebSearch=false){
-  const r=await fetch('/.netlify/functions/ai',{
+// ═══════════════════════════════════════════════════════
+// API KEYS — paste your keys between the quotes below
+// ═══════════════════════════════════════════════════════
+const ANTHROPIC_API_KEY = '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';   // sk-ant-api03-…  (console.anthropic.com)
+const TAVILY_API_KEY    = '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';      // tvly-…          (app.tavily.com)
+const APOLLO_API_KEY    = '4NGJiwV4SeVLVdXZAO04cA';      // Apollo.io key   (for contacts finder)
+// ═══════════════════════════════════════════════════════
+
+// ─── TAVILY — live internet research ───
+async function tavilySearch(query, maxResults=5){
+  const r=await fetch('https://api.tavily.com/search',{
     method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({systemPrompt, userPrompt, maxTokens, useWebSearch})
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':'Bearer '+TAVILY_API_KEY
+    },
+    body:JSON.stringify({
+      query,
+      search_depth:'advanced',
+      max_results:maxResults,
+      include_answer:true
+    })
   });
+  if(!r.ok){ const t=await r.text(); throw new Error('Tavily error '+r.status+': '+t.slice(0,120)); }
   const d=await r.json();
-  if(d.error)throw new Error(d.error);
-  return d.text||'';
+  const lines=[];
+  if(d.answer) lines.push('Summary: '+d.answer);
+  (d.results||[]).forEach(res=>lines.push('- '+res.title+': '+String(res.content||'').slice(0,300)));
+  return lines.join('\n');
+}
+
+// Runs 2 parallel Tavily searches on the client; degrades gracefully if Tavily fails
+async function tavilyResearch(cn){
+  try{
+    const [general, marketing]=await Promise.all([
+      tavilySearch(`${cn} company business overview markets revenue funding 2026`, 5),
+      tavilySearch(`${cn} affiliate marketing performance marketing digital strategy partnerships`, 4)
+    ]);
+    return `\n\nLIVE WEB RESEARCH (via Tavily — use this as your primary source of facts):\n[Company & Markets]\n${general}\n\n[Marketing & Affiliate Activity]\n${marketing}\n`;
+  }catch(e){
+    console.warn('Tavily research failed — generating from model knowledge only.', e);
+    return '';
+  }
+}
+
+// ─── CLAUDE — direct browser → Anthropic API (no server needed) ───
+async function callClaude(systemPrompt, userPrompt, maxTokens=3500){
+  if(!ANTHROPIC_API_KEY || ANTHROPIC_API_KEY.startsWith('PASTE_')){
+    throw new Error('Anthropic API key missing — open index.html and paste it in the API KEYS block at the top of the script.');
+  }
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':ANTHROPIC_API_KEY,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify({
+      model:'claude-sonnet-4-6',
+      max_tokens:maxTokens,
+      system:systemPrompt,
+      messages:[{role:'user',content:userPrompt}]
+    })
+  });
+  if(r.status===401||r.status===403){ throw new Error('Anthropic API key invalid or unauthorised — check the key pasted in the code.'); }
+  if(!r.ok){
+    let msg='API error '+r.status;
+    try{ const e=await r.json(); msg=e?.error?.message||msg; }catch(_e){}
+    throw new Error(msg);
+  }
+  const d=await r.json();
+  const blocks=(d.content||[]).filter(b=>b.type==='text').map(b=>b.text);
+  const text=blocks.join('\n');
+  return { text, stop_reason:d.stop_reason };
 }
 const B={
   blue:'214295',teal:'025450',orange:'F97316',burg:'6E1B35',
@@ -316,7 +445,7 @@ function showStatus(v){document.getElementById('status').style.display=v?'block'
 function showError(m){document.getElementById('error').style.display='block';document.getElementById('errorMsg').textContent='⚠ '+m;}
 function hideError(){document.getElementById('error').style.display='none';}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-document.getElementById('clientInput').addEventListener('keydown',e=>{if(e.key==='Enter')handleGenerate();});
+// keydown handled in DOMContentLoaded
 async function downloadPptx(){if(_dl)await _dl();}
 
 function showResult(cn,slides,cb=null){
@@ -415,7 +544,7 @@ const COMPANIES=[
 ];
 
 // ─── AUTOCOMPLETE LOGIC ───
-(function initAutocomplete(){
+function initAutocomplete(){
   const input=document.getElementById('clientInput');
   const drop=document.getElementById('acDropdown');
   let focusedIdx=-1;
@@ -477,7 +606,7 @@ const COMPANIES=[
   });
 
   document.addEventListener('click',e=>{if(!e.target.closest('.search-outer'))close();});
-})();
+}
 
 // Auto-suggest objectives based on company category
 function autoSelectObjectives(company){
@@ -511,7 +640,39 @@ function autoSelectObjectives(company){
   updateObjHint();
 }
 
-// ─── CROSS-BORDER LOGIC ───
+// ─── LOCATION (IP detect + manual override) ───
+const LOC_FLAGS={'India':'🇮🇳','China':'🇨🇳','SEA':'🌏'};
+let salespersonLocation='India'; // default
+
+async function detectLocation(){
+  try{
+    const r=await fetch('https://ipapi.co/json/',{signal:AbortSignal.timeout(3000)});
+    const d=await r.json();
+    const country=d.country_name||'';
+    if(country==='China') setLocation('China');
+    else if(['Singapore','Malaysia','Thailand','Indonesia','Philippines','Vietnam','Myanmar','Cambodia','Laos','Brunei'].includes(country)) setLocation('SEA');
+    else setLocation('India'); // default for all others incl India
+  }catch(e){
+    setLocation('India'); // fallback
+  }
+}
+
+function setLocation(loc){
+  salespersonLocation=loc;
+  const sel=document.getElementById('locSelect');
+  const flag=document.getElementById('locFlag');
+  if(sel) sel.value=loc;
+  if(flag) flag.textContent=LOC_FLAGS[loc]||'🌏';
+}
+
+function onLocChange(){
+  const val=document.getElementById('locSelect').value;
+  setLocation(val);
+}
+
+function getSalespersonLocation(){return salespersonLocation;}
+
+// detectLocation called in DOMContentLoaded
 const GEOS=[
   {id:'india',flag:'🇮🇳',label:'India'},
   {id:'sea',flag:'🌏',label:'SEA'},
@@ -537,8 +698,9 @@ const GEOS=[
 let isCrossBorder=false;
 let aiAssistOn=false;
 
-(function initGeos(){
+function initGeos(){
   const grid=document.getElementById('geoGrid');
+  if(!grid) return;
   GEOS.forEach(g=>{
     const pill=document.createElement('div');
     pill.className='geo-pill';
@@ -547,7 +709,7 @@ let aiAssistOn=false;
     pill.addEventListener('click',()=>{pill.classList.toggle('selected');clearAiResult();});
     grid.appendChild(pill);
   });
-})();
+}
 
 function toggleCrossBorder(){
   isCrossBorder=!isCrossBorder;
@@ -587,11 +749,12 @@ async function runAiGeoAssist(){
     ? `Given a brand called "${cn}", which 2-4 international markets from this list should they prioritise for cross-border affiliate marketing, and why? List: India, SEA (MY/SG/TH/PH/ID/VN), China, Japan, Korea, Australia, UAE, USA, UK. Give a single short paragraph — under 60 words. No bullet points. Be direct.`
     : `I'm pitching cross-border affiliate marketing to an APAC client but I'm not sure which geos to prioritise. Which 2-3 markets from this list are highest opportunity right now: India, SEA, China, Japan, Korea, Australia, UAE, USA, UK? Under 50 words. Be direct.`;
   try{
-    const text=await callClaude(
+    const gres=await callClaude(
       'You are a senior performance marketing strategist specialising in cross-border affiliate marketing across APAC, MENA, and Western markets.',
       prompt, 200
     );
-    el.textContent='🤖 '+text.trim();
+    const text=(gres.text||'').trim();
+    el.textContent='🤖 '+text;
     const lower=text.toLowerCase();
     GEOS.forEach(g=>{
       if(lower.includes(g.label.toLowerCase())||lower.includes(g.id)){
@@ -626,8 +789,9 @@ const OBJECTIVES=[
   {id:'newmarkets',icon:'🌏',label:'New Market Entry',product:'CJ Affiliate',pricing:'Hybrid',note:'geo-targeted publisher activation with local market expertise'},
 ];
 
-(function initObjectives(){
+function initObjectives(){
   const grid=document.getElementById('objGrid');
+  if(!grid) return;
   OBJECTIVES.forEach(obj=>{
     const pill=document.createElement('div');
     pill.className='obj-pill';
@@ -639,7 +803,7 @@ const OBJECTIVES=[
     });
     grid.appendChild(pill);
   });
-})();
+}
 
 function getSelectedObjectives(){
   return Array.from(document.querySelectorAll('.obj-pill.selected'))
@@ -661,313 +825,883 @@ async function handleGenerate(){
   if(!cn){showError('Please enter a client name.');return;}
   const objs=getSelectedObjectives();
   const cb=getCrossBorderContext();
-  hideError();document.getElementById('result').style.display='none';
+  hideError();
+  document.getElementById('result').style.display='none';
+  document.getElementById('contactsWrap').classList.remove('open');
   document.getElementById('generateBtn').disabled=true;
   showStatus(true);setStep(1);
   try{
-    const R=await researchClient(cn);setStep(2);await sleep(300);
-    setStep(3);
-    const C=await generateContent(cn,R,objs,cb);setStep(4);await sleep(300);
+    setStep(2);
+    const {R,C} = await researchAndGenerate(cn,objs,cb);
+    setStep(4);await sleep(300);
     setStep(5);
-    const slides=buildPptx(cn,C,R,objs,cb);await sleep(500);
-    showStatus(false);showResult(cn,slides,cb);
-  }catch(e){showStatus(false);showError(e.message||'Something went wrong.');console.error(e);}
-  finally{document.getElementById('generateBtn').disabled=false;}
+    const slides=buildPptx(cn,C,R,objs,cb);
+    await sleep(400);
+    showStatus(false);showResult(cn,slides,cb);showContactsPanel(cn);
+  }catch(e){
+    showStatus(false);
+    showError(e.message||'Something went wrong. Please try again.');
+    console.error(e);
+  }finally{
+    document.getElementById('generateBtn').disabled=false;
+  }
 }
 
-// ─── RESEARCH ───
-async function researchClient(cn){
-  const sys=`You are a senior business analyst in e-commerce, retail, affiliate and performance marketing across Asia-Pacific.
-Research the company and return ONLY valid JSON (no markdown fences, no preamble):
-{"companyOverview":"2-3 sentence description","category":"Primary category","activeMarkets":["markets"],"revenueSignals":"GMV/revenue/funding or empty string","affiliateMaturity":"Naive|Early|Mature","affiliateMilestone":"one sentence rationale","keyChallenge":"#1 growth challenge in 2025","competitors":["up to 3"],"keyFact1":"useful pitch fact","keyFact2":"digital/marketing strategy fact","recommendedMarkets":["Top 2-3 Tyroo CJ markets"],"publisherTypes":["relevant publisher types"],"toneForPitch":"Formal|Consultative|Energetic"}`;
+// ─── SINGLE COMBINED AI CALL ───
+async function researchAndGenerate(cn, objs=[], cb=null){
+  const objCtx = objs.length>0 ? `Objectives: ${objs.map(o=>o.label).join(', ')}.` : '';
+  const cbCtx = cb
+    ? `Campaign: CROSS-BORDER to ${cb.targetGeos.join(', ')}. Focus on international expansion.`
+    : `Campaign: DOMESTIC. Deepen home market performance.`;
+  const locCtx = `Salesperson based in ${getSalespersonLocation()}.`;
 
-  const text=await callClaude(sys,
-    `Research this company thoroughly using web search: "${cn}". Find their markets, category, digital maturity, revenue signals, and any affiliate/performance marketing activity. Return ONLY the JSON object.`,
-    2000, true
-  );
-  const m=text.match(/\{[\s\S]*\}/);
-  if(!m)throw new Error('Research parse error. Please try again.');
-  return JSON.parse(m[0]);
-}
+  const sys = `Tyroo|CJ senior sales strategist. APAC affiliate platform, Publicis Groupe, $26B revenue, 15K+ publishers. Direct, short sentences.
 
-// ─── CONTENT ───
-async function generateContent(cn,R,objs=[],cb=null){
-  const objContext=objs.length>0
-    ? `\nClient selected objectives: ${objs.map(o=>`${o.label} (${o.note})`).join('; ')}.\nLet these objectives drive your product recommendation, pricing model, publisher strategy, and solution framing. If multiple objectives are selected, acknowledge the mix and show how Tyroo CJ addresses all of them.`
-    : '';
-  const cbContext=cb
-    ? `\nCampaign type: CROSS-BORDER. Target geographies: ${cb.targetGeos.join(', ')}. Frame the pitch around helping this client expand internationally into these specific markets. Emphasise Tyroo CJ's on-ground local teams, geo-targeted publisher activation, and market-specific compliance. Tailor the market brief and publisher strategy to the cross-border opportunity.`
-    : `\nCampaign type: DOMESTIC. Focus the pitch on deepening performance in the client's home market.`;
-  const sys=`You are a senior sales strategist at Tyroo | CJ.
-Brand voice: Young, authoritative, experimental, straightforward. Short sentences. Direct. From a position of knowledge.
-Return ONLY valid JSON (no markdown, no preamble):
-{"executiveSummary":"3-4 sentences for this specific client","whyNow":"2-3 sentences on market timing","marketBrief":{"headline":"bold headline under 12 words","body":"3-4 sentences geo/category specific","stat1":{"value":"e.g. $4.2B","label":"label"},"stat2":{"value":"e.g. 3.2x","label":"label"},"stat3":{"value":"e.g. 68%","label":"label"}},"clientChallenge":{"heading":"under 8 words","body":"2-3 sentences","points":["point1","point2","point3"]},"tyrooSolution":{"heading":"under 8 words","body":"2-3 sentences","points":["solution1","solution2","solution3"]},"recommendedProduct":{"primary":"CJ Affiliate|CJ Leads|CJ Influence|CJ Marketplaces","rationale":"2 sentences","secondary":"secondary product"},"recommendedIntegration":{"primary":"integration name","rationale":"2 sentences","timeline":"e.g. 2-3 weeks"},"recommendedPricing":{"model":"PoS|PoC|CPL|Hybrid","rationale":"2 sentences","commissionRange":"e.g. 5-8%","estimatedROAS":"e.g. 4.5x within 90 days"},"publisherStrategy":"2-3 sentences on which publisher types to activate first","caseStudyAngle":"type of similar brand and outcome (no real names)","nextSteps":["step1","step2","step3"],"speakerNotes":{"cover":"how to open","about":"proof points to emphasise","market":"data to call out","challenge":"how to make it resonate","solution":"positioning vs competitors","product":"product focus","integration":"tech talking points","pricing":"handle objections","nextsteps":"how to secure follow-up"}}`;
-  const text=await callClaude(sys,
-    `Client: ${cn}\nResearch: ${JSON.stringify(R)}\nTyroo CJ: ${JSON.stringify({products:TCJ.products,pricingModels:TCJ.pricingModels,whyUs:TCJ.whyUs})}${objContext}${cbContext}\n\nGenerate deeply personalised pitch content for ${cn}. Every slide should feel written just for them.`,
+Return ONLY valid JSON, no markdown, no extra text:
+{"research":{"companyOverview":"1 sentence","category":"category","activeMarkets":["markets"],"revenueSignals":"or empty","affiliateMaturity":"Naive|Early|Mature","keyChallenge":"1 sentence","competitors":["up to 2"],"keyFact1":"1 fact","recommendedMarkets":["2 markets"],"publisherTypes":["3 types"]},"content":{"executiveSummary":"2 sentences","whyNow":"1 sentence","marketBrief":{"headline":"8 words max","body":"2 sentences","stat1":{"value":"$X","label":"label"},"stat2":{"value":"Xx","label":"label"},"stat3":{"value":"X%","label":"label"}},"clientChallenge":{"heading":"6 words","body":"1 sentence","points":["p1","p2","p3"]},"tyrooSolution":{"heading":"6 words","body":"1 sentence","points":["s1","s2","s3"]},"recommendedProduct":{"primary":"CJ Affiliate|CJ Leads|CJ Influence|CJ Marketplaces","primaryWhy":"1 sentence","primaryBenefits":["b1","b2","b3"],"secondary":"name","secondaryWhy":"1 sentence"},"recommendedPricing":{"model":"PoS|PoC|CPL|Hybrid","rationale":"1 sentence","commissionRange":"X-X%","estimatedROAS":"Xx in 90 days","riskProfile":"Zero risk|Low risk|Predictable spend","vsAlternative":"1 sentence"},"publisherStrategy":{"headline":"6 words","body":"1 sentence","types":["t1","t2","t3","t4"]},"caseStudy":{"clientType":"type","challenge":"1 sentence","solution":"1 sentence","outcome":"metric","market":"market"},"aiEdge":{"headline":"6 words","points":["p1","p2","p3"]},"recommendedIntegration":{"primary":"name","primaryWhy":"1 sentence","timeline":"X weeks","steps":["s1","s2","s3"],"secondary":"name"},"nextSteps":["s1","s2","s3"],"speakerNotes":{"cover":"1 line","about":"1 line","cjadvantage":"1 line","market":"1 line","challenge":"1 line","solution":"1 line","product":"1 line","pricing":"1 line","publisher":"1 line","casestudy":"1 line","ai":"1 line","integration":"1 line","nextsteps":"1 line"}}}`;
+
+  const webCtx = await tavilyResearch(cn);
+
+  const res = await callClaude(sys,
+    `Client: "${cn}". ${objCtx} ${cbCtx} ${locCtx}${webCtx} Ground the pitch in the live web research above where available. Output ONLY the JSON object.`,
     3000
   );
-  const m=text.match(/\{[\s\S]*\}/);
-  if(!m)throw new Error('Content generation failed. Please try again.');
-  return JSON.parse(m[0]);
+
+  if(res.error) throw new Error(res.error);
+  let text = res.text || '';
+
+  // Handle truncation
+  if(res.stop_reason === 'max_tokens'){
+    const lb = text.lastIndexOf('}');
+    if(lb > 0) text = text.slice(0, lb+1);
+  }
+
+  // Parse JSON
+  let parsed = null;
+  const attempts = [
+    () => { const m=text.match(/\{[\s\S]*\}/); return m ? JSON.parse(m[0]) : null; },
+    () => { const m=text.match(/```json\s*([\s\S]*?)\s*```/); return m ? JSON.parse(m[1]) : null; },
+    () => JSON.parse(text.trim()),
+  ];
+  for(const fn of attempts){
+    try { parsed = fn(); if(parsed) break; } catch(e){}
+  }
+  if(!parsed) throw new Error('Content generation failed. Please try again.');
+
+  // Return both R and C shaped correctly for buildPptx
+  const R = parsed.research || {};
+  const C = parsed.content || {};
+  return { R, C };
 }
 
 // ─── BUILD PPTX ───
 function buildPptx(cn,C,R,objs=[],cb=null){
-  const pres=new pptxgen();
-  pres.layout='LAYOUT_WIDE'; // 13.33 × 7.5 — matches CJ template
-  pres.title=`Tyroo CJ × ${cn}`;
-  const W=13.33,H=7.5;
-  const ms=()=>({type:'outer',color:'000000',blur:6,offset:2,angle:135,opacity:0.1});
+  const PptxGen = getPptxGen();
+  const pres = new PptxGen();
+  pres.layout = 'LAYOUT_WIDE';
+  pres.title  = `Tyroo CJ \u00d7 ${cn}`;
+  const W=13.33, H=7.5;
 
-  // ── shared helpers ──
-  function logo(s,x=0.5,y=0.3){
-    s.addText([{text:'tyroo',options:{bold:true,italic:true,color:B.blue,fontSize:12}},{text:'  |  ',options:{color:B.blue,fontSize:10}},{text:'CJ',options:{bold:true,color:B.blue,fontSize:10}}],{x,y,w:1.9,h:0.3,margin:0});
-  }
-  function footer(s,txt='Confidential · Internal Use Only'){
-    s.addText(txt,{x:0.5,y:H-0.32,w:W-1,h:0.26,fontSize:7.5,fontFace:'Arial',color:B.gray,margin:0});
-  }
-  function circles(s,x,y,color='FFFFFF',alpha=0.06){
-    [1.4,0.9,0.5].forEach((r,i)=>{
-      s.addShape(pres.shapes.OVAL,{x:x-r/2,y:y-r/2,w:r,h:r,fill:{type:'none'},line:{color,width:1.2,transparency:Math.round((1-alpha)*100*(1+i*0.3))}});
+  // ── PALETTE ──
+  const P = {
+    blue:'214295', teal:'025450', orange:'F97316', burg:'6E1B35',
+    sky:'A6DDEE', cream:'FDBBA0', white:'FFFFFF', offwhite:'F4F6FB',
+    dark:'0F1628', gray:'64748B', lgray:'E2E8F0', blueDark:'0e1a4a',
+    green:'5BA976', amber:'FFBE60',
+  };
+
+  // ── SAFE HELPERS (no rounded rect, no unsupported props) ──
+  const MF = 'Montserrat';  // heading font
+  const BF = 'Georgia';       // body font — guaranteed in PPT
+
+  function rect(s,x,y,w,h,fill,lineColor=null,lineW=0){
+    s.addShape(pres.shapes.RECTANGLE,{
+      x,y,w,h,
+      fill:{color:fill},
+      line: lineColor ? {color:lineColor,width:lineW} : {type:'none'}
     });
   }
-  function splitLeft(s,color){
-    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:W*0.415,h:H,fill:{color},line:{color,width:0}});
-    circles(s,0,H,B.white,0.07);
-  }
-  function stat(s,value,label,x,y,accent=B.teal){
-    s.addShape(pres.shapes.RECTANGLE,{x,y,w:3.65,h:1.32,fill:{color:B.white},line:{color:B.lgray,width:0.75},shadow:ms()});
-    s.addShape(pres.shapes.RECTANGLE,{x,y,w:0.07,h:1.32,fill:{color:accent},line:{color:accent,width:0}});
-    s.addText(value,{x:x+0.2,y:y+0.12,w:3.35,h:0.7,fontSize:30,fontFace:'Arial',bold:true,color:accent,margin:0});
-    s.addText(label,{x:x+0.2,y:y+0.85,w:3.35,h:0.4,fontSize:9,fontFace:'Arial',color:B.gray,margin:0});
-  }
-  function eyebrow(s,txt,color=B.orange){
-    s.addText(txt,{x:0.5,y:0.68,w:W-1,h:0.28,fontSize:8.5,fontFace:'Arial',bold:true,charSpacing:4,color,margin:0});
-  }
-  function h1(s,txt,x,y,w,h,color=B.blue){
-    s.addText(txt,{x,y,w,h,fontSize:28,fontFace:'Arial',bold:true,color,lineSpacingMultiple:1.1,margin:0});
-  }
-  function body(s,txt,x,y,w,h,color=B.gray){
-    s.addText(txt,{x,y,w,h,fontSize:11,fontFace:'Arial',color,lineSpacingMultiple:1.6,margin:0});
+
+  function txt(s,text,x,y,w,h,opts={}){
+    s.addText(text,{x,y,w,h,margin:0,...opts});
   }
 
-  // ══ SLIDE 1 — COVER ══
+  function logo(s,x=0.45,y=0.28,dark=false){
+    const c = dark ? P.blue : P.white;
+    txt(s,[
+      {text:'tyroo',options:{bold:true,italic:true,color:P.blue,fontSize:13,fontFace:BF}},
+      {text:'  |  ',options:{color:P.blue,fontSize:11,fontFace:BF}},
+      {text:'CJ',  options:{bold:true,color:P.blue,fontSize:11,fontFace:BF}}
+    ],x,y,2,0.35);
+  }
+
+  function logoWhite(s,x=0.45,y=0.28){
+    txt(s,[
+      {text:'tyroo',options:{bold:true,italic:true,color:P.white,fontSize:13,fontFace:BF}},
+      {text:'  |  ',options:{color:'A6DDEE',fontSize:11,fontFace:BF}},
+      {text:'CJ',  options:{bold:true,color:P.white,fontSize:11,fontFace:BF}}
+    ],x,y,2,0.35);
+  }
+
+  function footer(s,t='Confidential \u00b7 Tyroo CJ Internal'){
+    txt(s,t,0.45,H-0.3,W-0.9,0.24,{fontSize:7,fontFace:BF,color:P.gray});
+  }
+
+  function eyebrow(s,t,x=0.45,y=0.68,color=P.orange){
+    txt(s,t.toUpperCase(),x,y,W-0.9,0.28,{
+      fontSize:7.5,fontFace:MF,bold:true,charSpacing:5,color
+    });
+  }
+
+  function H1(s,t,x,y,w,h,color=P.blue,size=26){
+    txt(s,t,x,y,w,h,{fontSize:size,fontFace:MF,bold:true,color,lineSpacingMultiple:1.08});
+  }
+
+  function body(s,t,x,y,w,h,color=P.gray,size=10.5){
+    txt(s,t,x,y,w,h,{fontSize:size,fontFace:BF,color,lineSpacingMultiple:1.6});
+  }
+
+  function accentBar(s,x,y,h,color=P.blue){
+    rect(s,x,y,0.06,h,color);
+  }
+
+  function statBox(s,val,lbl,x,y,accent=P.teal){
+    rect(s,x,y,3.5,1.28,P.offwhite,P.lgray,0.75);
+    rect(s,x,y,0.06,1.28,accent);
+    txt(s,val,x+0.18,y+0.1,3.2,0.72,{fontSize:30,fontFace:MF,bold:true,color:accent});
+    txt(s,lbl,x+0.18,y+0.84,3.2,0.38,{fontSize:8.5,fontFace:BF,color:P.gray});
+  }
+
+  function pillRow(s,items,x,y,w,accent=P.blue){
+    items.forEach((item,i)=>{
+      const pw = w/items.length - 0.1;
+      const px = x + i*(pw+0.1);
+      rect(s,px,y,pw,0.52,P.offwhite,P.lgray,0.75);
+      rect(s,px,y,0.05,0.52,accent);
+      txt(s,item,px+0.14,y+0.08,pw-0.2,0.38,{fontSize:9,fontFace:MF,bold:true,color:P.dark});
+    });
+  }
+
+  function numberedCard(s,num,text,x,y,w,h,accent=P.blue){
+    rect(s,x,y,w,h,P.offwhite,P.lgray,0.75);
+    rect(s,x,y,0.06,h,accent);
+    txt(s,String(num).padStart(2,'0'),x+0.14,y+0.1,0.6,0.5,{fontSize:18,fontFace:MF,bold:true,color:accent});
+    txt(s,text,x+0.8,y+0.14,w-0.95,h-0.25,{fontSize:10,fontFace:BF,color:P.dark,lineSpacingMultiple:1.5});
+  }
+
+  function darkPanel(s,x,y,w,h,color=P.blue){
+    rect(s,x,y,w,h,color);
+  }
+
+  // ── DECORATIVE: concentric quarter-circles (brand motif) ──
+  function motif(s,x,y,color='FFFFFF',count=3){
+    [0.9,0.58,0.32].slice(0,count).forEach(r=>{
+      s.addShape(pres.shapes.OVAL,{
+        x:x-r/2,y:y-r/2,w:r,h:r,
+        fill:{type:'none'},
+        line:{color,width:1}
+      });
+    });
+  }
+
+  const today = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  const objs_sel = objs.map(o=>o.label).join(' · ') || '';
+
+  // ════════════════════════════════════
+  //  S1 — COVER
+  // ════════════════════════════════════
   {
-    const s=pres.addSlide();s.background={color:B.white};
-    circles(s,W-0.3,0.3,B.cream,0.12);
-    circles(s,0,H,B.lgray,0.1);
-    logo(s,0.55,0.38);
-    s.addText('Performance Marketing\nPitch Deck',{x:0.55,y:0.95,w:6,h:1.85,fontSize:40,fontFace:'Arial',bold:true,color:B.blue,lineSpacingMultiple:1.06,margin:0});
-    s.addText(`Prepared for ${cn}`,{x:0.55,y:2.92,w:5.5,h:0.55,fontSize:18,fontFace:'Arial',bold:true,color:B.orange,margin:0});
-    s.addText(TCJ.descriptor,{x:0.55,y:3.6,w:5.3,h:0.9,fontSize:10.5,fontFace:'Arial',color:B.gray,lineSpacingMultiple:1.6,margin:0});
-    s.addShape(pres.shapes.LINE,{x:0.55,y:4.68,w:3.2,h:0,line:{color:B.lgray,width:1}});
-    const today=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
-    s.addText(`Confidential · ${today}`,{x:0.55,y:4.82,w:5,h:0.28,fontSize:9,fontFace:'Arial',color:B.gray,margin:0});
-    // right panel — blue/teal split
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:6.9,y:0.45,w:5.93,h:6.6,fill:{color:B.blue},line:{color:B.blue,width:0},rectRadius:0.35});
-    s.addShape(pres.shapes.RECTANGLE,{x:6.9,y:4.0,w:5.93,h:3.05,fill:{color:B.teal},line:{color:B.teal,width:0}});
-    circles(s,W-0.2,H-0.2,B.white,0.08);
-    s.addText('Trusted for Growth',{x:7.1,y:4.25,w:5.5,h:0.65,fontSize:24,fontFace:'Arial',bold:true,color:B.white,align:'center',margin:0});
-    s.addText(TCJ.globalRevenue,{x:7.1,y:5.08,w:5.5,h:0.4,fontSize:10,fontFace:'Arial',color:B.sky,align:'center',margin:0});
-    s.addText('Transforming performance marketing\nin APAC through continuous growth.',{x:7.1,y:5.65,w:5.5,h:0.7,fontSize:10,fontFace:'Arial',color:B.sky,align:'center',lineSpacingMultiple:1.5,margin:0});
-    // Objectives on cover
-    if(objs.length>0){
-      s.addText('CLIENT OBJECTIVES',{x:0.55,y:5.55,w:5.8,h:0.26,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.blue,margin:0});
-      const objLabels=objs.map(o=>`${o.icon} ${o.label}`).join('   ·   ');
-      s.addText(objLabels,{x:0.55,y:5.86,w:5.8,h:0.38,fontSize:9,fontFace:'Arial',color:B.dark,margin:0});
+    const s = pres.addSlide();
+    s.background = {color: P.blueDark};
+
+    // Left white content area
+    rect(s, 0, 0, 6.8, H, P.white);
+
+    // Decorative blue stripe
+    rect(s, 6.78, 0, 0.06, H, P.blue);
+
+    // Right panel — dark blue with teal bottom
+    rect(s, 6.84, 0, W-6.84, H, '111d45');
+    rect(s, 6.84, 4.8, W-6.84, H-4.8, P.teal);
+
+    // Motifs
+    motif(s, 0, H, P.lgray);
+    motif(s, W, 0, 'A6DDEE');
+
+    // Logo on white side
+    logo(s, 0.55, 0.42);
+
+    // Main heading
+    txt(s,'Performance\nMarketing\nPitch Deck',0.55,1.1,5.6,2.6,{
+      fontSize:42,fontFace:MF,bold:true,color:P.blue,lineSpacingMultiple:1.05
+    });
+
+    // Client name
+    rect(s,0.55,3.85,5.6,0.6,P.orange);
+    txt(s,`Prepared for ${cn}`,0.7,3.93,5.3,0.44,{
+      fontSize:16,fontFace:MF,bold:true,color:P.white
+    });
+
+    if(objs_sel){
+      txt(s,'OBJECTIVES',0.55,4.65,5.6,0.24,{fontSize:7,fontFace:MF,bold:true,charSpacing:4,color:P.gray});
+      txt(s,objs_sel,0.55,4.92,5.6,0.35,{fontSize:8.5,fontFace:BF,color:P.dark});
     }
-    footer(s,`Prepared for ${cn} · Confidential`);
-    s.addNotes(C.speakerNotes?.cover||`Open by establishing credibility. Tyroo CJ is the only affiliate platform with on-ground presence across India, SEA, China, US, and EU. CJ powers $26B in annual revenue globally. This pitch is built specifically for ${cn}.`);
+
+    txt(s,`Confidential \u00b7 ${today}`,0.55,H-0.48,5.6,0.28,{fontSize:8,fontFace:BF,color:P.gray});
+
+    // Right panel text
+    logoWhite(s,7.1,0.42);
+    txt(s,'Trusted for Growth',7.1,4.95,6,0.6,{fontSize:22,fontFace:MF,bold:true,color:P.white,align:'center'});
+    txt(s,'$26B global revenue \u00b7 15,000+ publishers',7.1,5.65,6,0.35,{fontSize:9,fontFace:BF,color:P.sky,align:'center'});
+    txt(s,'India \u00b7 SEA \u00b7 China \u00b7 US \u00b7 EU',7.1,6.1,6,0.32,{fontSize:8.5,fontFace:BF,color:P.sky,align:'center'});
+
+    s.addNotes(C.speakerNotes?.cover||'Open by establishing Tyroo CJ credibility. CJ is part of Publicis Groupe.');
   }
 
-  // ══ SLIDE 2 — ABOUT ══
+  // ════════════════════════════════════
+  //  S2 — ABOUT TYROO CJ
+  // ════════════════════════════════════
   {
-    const s=pres.addSlide();s.background={color:B.white};logo(s);
-    eyebrow(s,'ABOUT TYROO | CJ');
-    h1(s,'The next-gen performance\nmarketing platform.',0.5,1.05,5.9,1.45);
-    body(s,TCJ.descriptor,0.5,2.62,5.8,0.78);
-    // right — blue top
-    s.addShape(pres.shapes.RECTANGLE,{x:7.15,y:0.5,w:5.68,h:3.12,fill:{color:B.blue},line:{color:B.blue,width:0}});
-    s.addText('CJ is part of Publicis Groupe',{x:7.35,y:0.7,w:5.2,h:0.32,fontSize:8.5,fontFace:'Arial',bold:true,charSpacing:2,color:B.sky,margin:0});
-    body(s,TCJ.cjGlobal,7.35,1.12,5.1,1.4,B.white);
-    s.addText('$26B',{x:7.35,y:2.65,w:2.3,h:0.72,fontSize:36,fontFace:'Arial',bold:true,color:B.cream,margin:0});
-    s.addText('annual revenue to advertisers globally',{x:9.8,y:2.85,w:2.85,h:0.42,fontSize:8.5,fontFace:'Arial',color:B.sky,margin:0});
-    // right — teal bottom
-    s.addShape(pres.shapes.RECTANGLE,{x:7.15,y:3.72,w:5.68,h:3.03,fill:{color:B.teal},line:{color:B.teal,width:0}});
-    circles(s,W-0.2,H-0.2,B.white,0.07);
-    s.addText('OUR PUBLISHER NETWORK',{x:7.35,y:3.9,w:5.2,h:0.28,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.sky,margin:0});
-    s.addText('15,000+',{x:7.35,y:4.25,w:5.2,h:0.9,fontSize:52,fontFace:'Arial',bold:true,color:B.white,margin:0});
-    body(s,'vetted publishers across content, coupon, cashback, social & comparison',7.35,5.28,5.1,0.65,B.sky);
-    // markets grid
-    s.addText('OUR MARKETS',{x:0.5,y:3.62,w:6,h:0.28,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.blue,margin:0});
-    TCJ.markets.forEach((m,i)=>{
-      const col=i%2,row=Math.floor(i/2),x=0.5+col*3.15,y=3.98+row*0.72;
-      s.addShape(pres.shapes.RECTANGLE,{x,y,w:3.0,h:0.55,fill:{color:B.offwhite},line:{color:B.lgray,width:0.75}});
-      s.addShape(pres.shapes.RECTANGLE,{x,y,w:0.06,h:0.55,fill:{color:i%2===0?B.blue:B.teal},line:{color:B.blue,width:0}});
-      s.addText(m,{x:x+0.15,y:y+0.1,w:2.75,h:0.36,fontSize:9.5,fontFace:'Arial',bold:true,color:B.dark,margin:0});
+    const s = pres.addSlide();
+    s.background = {color: P.white};
+
+    // Full dark left panel
+    rect(s,0,0,5.2,H,P.blue);
+    motif(s,0,H,P.white);
+    logoWhite(s,0.45,0.35);
+
+    // Left panel content
+    txt(s,'ABOUT TYROO | CJ',0.45,0.95,4.5,0.28,{fontSize:7,fontFace:MF,bold:true,charSpacing:5,color:P.sky});
+    txt(s,'APAC\'s next-gen\nperformance marketing\nplatform.',0.45,1.35,4.5,2.1,{fontSize:24,fontFace:MF,bold:true,color:P.white,lineSpacingMultiple:1.08});
+    body(s,TCJ.descriptor,0.45,3.55,4.5,1.2,P.sky,9.5);
+
+    // Stats row on left panel bottom
+    const aboutStats=[
+      {v:'$26B',l:'Global revenue'},
+      {v:'15K+',l:'Publishers'},
+      {v:'6',l:'Markets'},
+    ];
+    aboutStats.forEach((st,i)=>{
+      rect(s,0.45+i*1.58,5.05,1.45,1.12,'1a2f6e');
+      txt(s,st.v,0.55+i*1.58,5.12,1.25,0.52,{fontSize:20,fontFace:MF,bold:true,color:P.cream});
+      txt(s,st.l,0.55+i*1.58,5.65,1.25,0.38,{fontSize:7.5,fontFace:BF,color:P.sky});
     });
-    footer(s);s.addNotes(C.speakerNotes?.about||'Emphasise Publicis Groupe backing. Highlight warm publisher relationships — no cold outreach. $26B global proof point gives instant credibility.');
+
+    // Right side — white content
+    // Vision block
+    txt(s,'OUR VISION',5.5,0.55,7.38,0.28,{fontSize:7,fontFace:MF,bold:true,charSpacing:5,color:P.orange});
+    txt(s,TCJ.vision,5.5,0.92,7.38,0.62,{fontSize:13,fontFace:MF,bold:true,color:P.blue,lineSpacingMultiple:1.2});
+
+    // Divider
+    s.addShape(pres.shapes.LINE,{x:5.5,y:1.72,w:7.38,h:0,line:{color:P.lgray,width:0.75}});
+
+    // Mission block
+    txt(s,'OUR MISSION',5.5,1.88,7.38,0.28,{fontSize:7,fontFace:MF,bold:true,charSpacing:5,color:P.orange});
+    txt(s,TCJ.mission,5.5,2.25,7.38,0.62,{fontSize:12,fontFace:MF,bold:true,color:P.teal,lineSpacingMultiple:1.2});
+
+    // Divider
+    s.addShape(pres.shapes.LINE,{x:5.5,y:3.05,w:7.38,h:0,line:{color:P.lgray,width:0.75}});
+
+    // Markets
+    txt(s,'OUR MARKETS',5.5,3.22,7.38,0.28,{fontSize:7,fontFace:MF,bold:true,charSpacing:5,color:P.orange});
+    TCJ.markets.forEach((m,i)=>{
+      const col=i%3, row=Math.floor(i/3);
+      const x=5.5+col*2.5, y=3.62+row*0.72;
+      rect(s,x,y,2.35,0.55,P.offwhite,P.lgray,0.75);
+      rect(s,x,y,0.05,0.55,P.blue);
+      txt(s,m,x+0.14,y+0.1,2.1,0.36,{fontSize:8.5,fontFace:MF,bold:true,color:P.dark});
+    });
+
+    // Brand tagline strip
+    rect(s,5.5,5.05,7.38,0.62,P.teal);
+    txt(s,TCJ.globalRevenue,5.68,5.18,7.1,0.38,{fontSize:10,fontFace:MF,bold:true,color:P.white});
+
+    // Why us bullets
+    TCJ.whyUs.slice(0,2).forEach((w,i)=>{
+      accentBar(s,5.5,5.82+i*0.42,0.35,P.orange);
+      txt(s,w,5.68,5.84+i*0.42,7.1,0.32,{fontSize:8.5,fontFace:BF,color:P.gray});
+    });
+
+    footer(s);
+    s.addNotes(C.speakerNotes?.about||'Lead with Publicis Groupe credibility. 15,000 publishers from Day 1 — no cold outreach.');
   }
 
-  // ══ SLIDE 3 — MARKET BRIEF ══
+  // ════════════════════════════════════
+  //  S3 — CJ GLOBAL ADVANTAGE
+  // ════════════════════════════════════
   {
-    const s=pres.addSlide();s.background={color:B.white};logo(s);
-    eyebrow(s,`MARKET BRIEF · ${(R.recommendedMarkets||[]).join(' · ').toUpperCase()}`);
-    h1(s,C.marketBrief?.headline||'The affiliate opportunity is now.',0.5,1.05,W-1,0.95);
-    body(s,C.marketBrief?.body||'',0.5,2.1,W-1,1.1);
-    const stats=[C.marketBrief?.stat1||{value:'$6B+',label:'Asia affiliate market 2025'},C.marketBrief?.stat2||{value:'3.5x',label:'Avg ROAS vs paid channels'},C.marketBrief?.stat3||{value:'72%',label:'Top APAC brands use affiliate as primary'}];
-    stats.forEach((st,i)=>stat(s,st.value,st.label,0.5+i*4.38,3.45,[B.blue,B.teal,B.burg][i]));
-    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:4.95,w:W-1,h:2.08,fill:{color:B.blue},line:{color:B.blue,width:0}});
-    s.addText(`"${C.whyNow||'Affiliate is the highest-ROI channel brands are underinvesting in. The window is now.'}"`,{x:0.85,y:5.08,w:W-1.7,h:1.82,fontSize:13,fontFace:'Arial',italic:true,color:B.white,lineSpacingMultiple:1.65,valign:'middle',margin:0});
-    footer(s);s.addNotes(C.speakerNotes?.market||'Walk through numbers. Pause on the stat most relevant to their category. The quote is your anchor — return to it when pricing comes up.');
+    const s = pres.addSlide();
+    s.background = {color: P.blueDark};
+
+    motif(s,W,0,'A6DDEE');
+    motif(s,0,H,'214295');
+
+    logoWhite(s);
+    txt(s,'THE CJ GLOBAL ADVANTAGE',0.45,0.68,12,0.28,{fontSize:7,fontFace:MF,bold:true,charSpacing:5,color:P.cream});
+    txt(s,'Part of Publicis Groupe.\nThe world\'s most connected affiliate network.',0.45,1.05,9,1.2,{fontSize:28,fontFace:MF,bold:true,color:P.white,lineSpacingMultiple:1.08});
+
+    // Big number
+    txt(s,'$26B',0.45,2.55,4,1.0,{fontSize:72,fontFace:MF,bold:true,color:P.cream});
+    txt(s,'Annual revenue driven to advertisers via CJ',0.45,3.52,5,0.4,{fontSize:10,fontFace:BF,color:P.sky});
+
+    // 3 global proof points
+    const gp=[
+      {v:'3,800+',l:'Advertisers globally'},
+      {v:'70K+',l:'Active publishers worldwide'},
+      {v:'#1',l:'Affiliate network — Forbes & mThink'},
+    ];
+    gp.forEach((g,i)=>{
+      rect(s,6.5+i*2.3,2.4,2.15,1.7,'1a2560',P.sky,0.5);
+      txt(s,g.v,6.65+i*2.3,2.55,1.85,0.72,{fontSize:26,fontFace:MF,bold:true,color:P.cream});
+      txt(s,g.l,6.65+i*2.3,3.22,1.85,0.75,{fontSize:8.5,fontFace:BF,color:P.sky,lineSpacingMultiple:1.4});
+    });
+
+    // Why APAC
+    rect(s,0.45,4.15,W-0.9,1.75,'1a2560',P.teal,0.75);
+    txt(s,'WHY TYROO SPECIFICALLY FOR APAC',0.65,4.3,12,0.28,{fontSize:7,fontFace:MF,bold:true,charSpacing:4,color:P.teal});
+    const apacPts = TCJ.whyUs.slice(0,2);
+    apacPts.forEach((p,i)=>{
+      accentBar(s,0.65,4.68+i*0.55,0.45,P.orange);
+      txt(s,p,0.82,4.7+i*0.55,W-1.4,0.42,{fontSize:9.5,fontFace:BF,color:P.white});
+    });
+
+    footer(s,'Confidential · Tyroo CJ Internal');
+    s.addNotes(C.speakerNotes?.cjadvantage||'CJ\'s global network is what separates us. No other affiliate platform in APAC has this backing.');
   }
 
-  // ══ SLIDE 4 — CLIENT CHALLENGE ══
+  // ════════════════════════════════════
+  //  S4 — MARKET BRIEF
+  // ════════════════════════════════════
   {
-    const s=pres.addSlide();s.background={color:B.white};logo(s);
-    splitLeft(s,B.teal);
-    s.addText(`The\n${cn}\nChallenge`,{x:0.45,y:0.95,w:5.0,h:2.8,fontSize:32,fontFace:'Arial',bold:true,color:B.white,lineSpacingMultiple:1.08,margin:0});
-    body(s,C.clientChallenge?.heading||'Growth at scale demands a smarter channel.',0.45,3.85,5.0,1.2,B.sky);
-    s.addText('WHAT WE UNDERSTAND',{x:5.82,y:0.68,w:7.0,h:0.28,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.teal,margin:0});
-    body(s,C.clientChallenge?.body||'',5.82,1.05,7.0,1.05);
+    const s = pres.addSlide();
+    s.background = {color: P.white};
+    logo(s);
+    eyebrow(s,`Market Brief · ${(R.recommendedMarkets||[]).join(' · ')}`);
+
+    H1(s,C.marketBrief?.headline||'The affiliate opportunity is now.',0.45,1.0,W-0.9,0.88,P.blue,24);
+    body(s,C.marketBrief?.body||'',0.45,2.0,W-0.9,1.05);
+
+    const stats=[
+      C.marketBrief?.stat1||{value:'$6B+',label:'Asia affiliate market 2025'},
+      C.marketBrief?.stat2||{value:'3.5x',label:'Avg ROAS vs paid channels'},
+      C.marketBrief?.stat3||{value:'72%',label:'Top APAC brands use affiliate'},
+    ];
+    stats.forEach((st,i)=>statBox(s,st.value,st.label,0.45+i*4.35,3.22,[P.blue,P.teal,P.burg][i]));
+
+    // Why now quote
+    rect(s,0.45,4.68,W-0.9,1.9,P.blue);
+    accentBar(s,0.45,4.68,1.9,P.orange);
+    txt(s,`\u201c${C.whyNow||'Affiliate is the highest-ROI channel brands are underinvesting in.'}\u201d`,0.62,4.82,W-1.2,1.62,{
+      fontSize:13,fontFace:MF,italic:true,color:P.white,lineSpacingMultiple:1.65,valign:'middle'
+    });
+
+    footer(s);
+    s.addNotes(C.speakerNotes?.market||'Pause on the stat most relevant to their category. The quote is your anchor.');
+  }
+
+  // ════════════════════════════════════
+  //  S5 — CLIENT CHALLENGE
+  // ════════════════════════════════════
+  {
+    const s = pres.addSlide();
+    s.background = {color: P.white};
+    logo(s);
+
+    // Left teal panel
+    darkPanel(s,0,0,5.3,H,P.teal);
+    motif(s,0,H,P.white);
+    logoWhite(s,0.45,0.28);
+    txt(s,`The\n${cn}\nChallenge`,0.45,1.0,4.6,2.8,{fontSize:32,fontFace:MF,bold:true,color:P.white,lineSpacingMultiple:1.06});
+    body(s,C.clientChallenge?.heading||'',0.45,3.9,4.6,1.1,P.sky,12);
+
+    // Snapshot bar
+    rect(s,0.45,5.25,4.4,0.65,P.orange);
+    txt(s,`${R.category||'E-commerce'} · ${R.affiliateMaturity||'Early'} stage · ${(R.recommendedMarkets||['APAC'])[0]}`,0.62,5.38,4.1,0.38,{fontSize:9,fontFace:MF,bold:true,color:P.white});
+
+    // Right — challenge cards
+    eyebrow(s,'What We Understand',5.55,0.68,P.teal);
+    body(s,C.clientChallenge?.body||'',5.55,1.05,7.2,0.92);
+
     const pts=C.clientChallenge?.points||['Challenge 1','Challenge 2','Challenge 3'];
     pts.forEach((p,i)=>{
-      s.addShape(pres.shapes.RECTANGLE,{x:5.82,y:2.35+i*1.38,w:7.0,h:1.2,fill:{color:B.offwhite},line:{color:B.lgray,width:0.75}});
-      s.addShape(pres.shapes.RECTANGLE,{x:5.82,y:2.35+i*1.38,w:0.07,h:1.2,fill:{color:[B.blue,B.orange,B.burg][i]},line:{color:B.blue,width:0}});
-      s.addText(String(i+1).padStart(2,'0'),{x:6.0,y:2.46+i*1.38,w:0.65,h:0.55,fontSize:20,fontFace:'Arial',bold:true,color:[B.blue,B.orange,B.burg][i],margin:0});
-      s.addText(p,{x:6.72,y:2.5+i*1.38,w:5.85,h:0.9,fontSize:10.5,fontFace:'Arial',color:B.dark,lineSpacingMultiple:1.5,margin:0});
+      numberedCard(s,i+1,p,5.55,2.2+i*1.42,7.2,1.25,[P.blue,P.orange,P.burg][i]);
     });
-    s.addShape(pres.shapes.RECTANGLE,{x:5.82,y:6.45,w:7.0,h:0.65,fill:{color:B.blue},line:{color:B.blue,width:0}});
-    s.addText(`${cn} · ${R.category||'E-commerce'} · Affiliate maturity: ${R.affiliateMaturity||'Early'} · ${(R.recommendedMarkets||['India'])[0]}`,{x:6.02,y:6.56,w:6.6,h:0.38,fontSize:9,fontFace:'Arial',color:B.white,margin:0});
-    footer(s);s.addNotes(C.speakerNotes?.challenge||'This slide shows homework done. Read the heading, pause — let the client confirm or correct. Mirror their language when they respond.');
+
+    footer(s);
+    s.addNotes(C.speakerNotes?.challenge||'Read the heading, pause — let the client confirm or correct. Mirror their language.');
   }
 
-  // ══ SLIDE 5 — SOLUTION ══
+  // ════════════════════════════════════
+  //  S6 — TYROO CJ SOLUTION
+  // ════════════════════════════════════
   {
-    const s=pres.addSlide();s.background={color:B.white};logo(s);
-    eyebrow(s,'THE TYROO CJ SOLUTION');
-    h1(s,C.tyrooSolution?.heading||'Performance marketing built for your scale.',0.5,1.05,8.5,0.95);
-    body(s,C.tyrooSolution?.body||'',0.5,2.08,W-1,0.82);
+    const s = pres.addSlide();
+    s.background = {color: P.white};
+    logo(s);
+    eyebrow(s,'The Tyroo CJ Solution');
+
+    H1(s,C.tyrooSolution?.heading||'Performance marketing built for your scale.',0.45,1.0,W-0.9,0.88,P.blue,24);
+    body(s,C.tyrooSolution?.body||'',0.45,2.0,W-0.9,0.72);
+
     const pts=C.tyrooSolution?.points||TCJ.whyUs.slice(0,3);
-    const pcols=[B.blue,B.teal,B.burg];
+    const pcols=[P.blue,P.teal,P.burg];
     pts.forEach((p,i)=>{
-      s.addShape(pres.shapes.RECTANGLE,{x:0.5+i*4.28,y:3.08,w:4.08,h:2.68,fill:{color:pcols[i]},line:{color:B.white,width:0}});
-      s.addText(String(i+1),{x:0.7+i*4.28,y:3.22,w:0.65,h:0.6,fontSize:28,fontFace:'Arial',bold:true,color:B.white,margin:0});
-      s.addShape(pres.shapes.LINE,{x:0.7+i*4.28,y:3.88,w:3.5,h:0,line:{color:B.white,width:0.5,transparency:60}});
-      s.addText(p,{x:0.7+i*4.28,y:4.0,w:3.65,h:1.65,fontSize:10.5,fontFace:'Arial',color:B.white,lineSpacingMultiple:1.55,margin:0});
+      rect(s,0.45+i*4.28,2.92,4.08,2.72,pcols[i]);
+      txt(s,String(i+1),0.65+i*4.28,3.05,0.6,0.55,{fontSize:28,fontFace:MF,bold:true,color:'FFFFFF',opacity:35});
+      s.addShape(pres.shapes.LINE,{x:0.65+i*4.28,y:3.68,w:3.6,h:0,line:{color:P.white,width:0.5,transparency:60}});
+      txt(s,p,0.65+i*4.28,3.82,3.7,1.7,{fontSize:10,fontFace:BF,color:P.white,lineSpacingMultiple:1.55});
     });
-    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:5.92,w:W-1,h:1.28,fill:{color:B.offwhite},line:{color:B.lgray,width:0.75}});
-    s.addText('WHY TYROO CJ OVER OTHERS',{x:0.7,y:6.02,w:8,h:0.26,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.orange,margin:0});
-    s.addText([{text:TCJ.whyUs[0],options:{bullet:true,breakLine:true}},{text:TCJ.whyUs[1],options:{bullet:true}}],{x:0.7,y:6.3,w:W-1.4,h:0.8,fontSize:9.5,fontFace:'Arial',color:B.dark,lineSpacingMultiple:1.5,paraSpaceAfter:3,margin:0});
-    footer(s);s.addNotes(C.speakerNotes?.solution||'Position each panel directly against the challenge slide. Ask: "Does this match what you\'re trying to solve?" Get micro-commitments before moving on.');
+
+    // Differentiators
+    rect(s,0.45,5.82,W-0.9,1.36,P.offwhite,P.lgray,0.75);
+    txt(s,'WHY TYROO CJ OVER OTHER PLATFORMS',0.65,5.95,12,0.26,{fontSize:7,fontFace:MF,bold:true,charSpacing:4,color:P.orange});
+    TCJ.whyUs.slice(0,2).forEach((w,i)=>{
+      accentBar(s,0.65,6.28+i*0.42,0.34,P.teal);
+      txt(s,w,0.82,6.3+i*0.42,W-1.4,0.32,{fontSize:9,fontFace:BF,color:P.dark});
+    });
+
+    footer(s);
+    s.addNotes(C.speakerNotes?.solution||'Position each panel directly against the challenge. Ask: "Does this match what you\'re trying to solve?"');
   }
 
-  // ══ SLIDE 6 — PRODUCTS ══
+  // ════════════════════════════════════
+  //  S7 — RECOMMENDED PRODUCT (WHY)
+  // ════════════════════════════════════
   {
-    const s=pres.addSlide();s.background={color:B.white};logo(s);
-    splitLeft(s,B.blue);
-    s.addText('OUR PRODUCTS',{x:0.45,y:0.65,w:5.0,h:0.28,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.sky,margin:0});
-    s.addText('Built for every\nstage of the\ncommerce journey.',{x:0.45,y:1.02,w:4.9,h:2.2,fontSize:24,fontFace:'Arial',bold:true,color:B.white,lineSpacingMultiple:1.1,margin:0});
-    const recP=C.recommendedProduct?.primary||'CJ Affiliate';
-    s.addShape(pres.shapes.RECTANGLE,{x:0.45,y:3.95,w:4.9,h:1.62,fill:{color:B.orange},line:{color:B.orange,width:0}});
-    s.addText('RECOMMENDED FOR YOU',{x:0.62,y:4.1,w:4.5,h:0.28,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.white,margin:0});
-    s.addText(recP,{x:0.62,y:4.45,w:4.5,h:0.5,fontSize:18,fontFace:'Arial',bold:true,color:B.white,margin:0});
-    body(s,C.recommendedProduct?.rationale||'',0.62,5.02,4.5,0.48,B.white);
+    const s = pres.addSlide();
+    s.background = {color: P.white};
+    logo(s);
+    eyebrow(s,'Recommended Product Stack');
+
+    const recP = C.recommendedProduct?.primary||'CJ Affiliate';
+    const secP = C.recommendedProduct?.secondary||'CJ Leads';
+
+    // Left — primary recommendation deep-dive
+    H1(s,`Why ${recP}?`,0.45,1.0,6.2,0.72,P.blue,22);
+    body(s,C.recommendedProduct?.primaryWhy||'',0.45,1.82,6.2,0.85);
+
+    const bens = C.recommendedProduct?.primaryBenefits||['Benefit 1','Benefit 2','Benefit 3'];
+    bens.forEach((b,i)=>{
+      rect(s,0.45,2.88+i*0.72,6.2,0.62,P.offwhite,P.lgray,0.75);
+      accentBar(s,0.45,2.88+i*0.72,0.62,P.blue);
+      txt(s,`\u2714  ${b}`,0.62,2.96+i*0.72,5.85,0.46,{fontSize:10,fontFace:BF,color:P.dark});
+    });
+
+    // Also consider
+    rect(s,0.45,5.08,6.2,0.72,P.offwhite,P.lgray,0.75);
+    accentBar(s,0.45,5.08,0.72,P.teal);
+    txt(s,'ALSO RECOMMENDED',0.62,5.14,6,0.26,{fontSize:7,fontFace:MF,bold:true,charSpacing:3,color:P.teal});
+    txt(s,`${secP} — ${C.recommendedProduct?.secondaryWhy||''}`,0.62,5.42,6.0,0.32,{fontSize:9.5,fontFace:BF,color:P.dark});
+
+    // Right — all 4 products overview
+    rect(s,7.0,0.55,5.88,6.68,P.blueDark);
+    txt(s,'FULL PRODUCT SUITE',7.18,0.72,5.5,0.28,{fontSize:7,fontFace:MF,bold:true,charSpacing:4,color:P.sky});
     Object.entries(TCJ.products).forEach(([name,desc],i)=>{
-      const isR=name===recP;
-      s.addShape(pres.shapes.RECTANGLE,{x:5.8,y:0.55+i*1.68,w:7.03,h:1.55,fill:{color:isR?B.blueBg:B.offwhite},line:{color:isR?B.blue:B.lgray,width:isR?1.5:0.75}});
-      if(isR)s.addShape(pres.shapes.RECTANGLE,{x:5.8,y:0.55+i*1.68,w:0.08,h:1.55,fill:{color:B.blue},line:{color:B.blue,width:0}});
-      s.addText(name,{x:6.02,y:0.7+i*1.68,w:5.5,h:0.42,fontSize:12,fontFace:'Arial',bold:true,color:isR?B.blue:B.dark,margin:0});
-      s.addText(desc,{x:6.02,y:1.15+i*1.68,w:6.5,h:0.88,fontSize:9,fontFace:'Arial',color:B.gray,lineSpacingMultiple:1.45,margin:0});
-      if(isR)s.addText('★ Recommended',{x:11.2,y:0.7+i*1.68,w:1.5,h:0.3,fontSize:7.5,fontFace:'Arial',bold:true,color:B.blue,align:'right',margin:0});
+      const isRec = name===recP;
+      rect(s,7.18,1.15+i*1.38,5.52,1.22,isRec?'1e2f6e':P.blueDark,isRec?P.orange:P.sky,isRec?1.5:0.5);
+      if(isRec){
+        rect(s,7.18,1.15+i*1.38,0.07,1.22,P.orange);
+        txt(s,'\u2605 PRIMARY',11.8,1.22+i*1.38,0.8,0.24,{fontSize:6.5,fontFace:MF,bold:true,color:P.orange});
+      }
+      txt(s,name,7.32,1.28+i*1.38,4.5,0.38,{fontSize:10.5,fontFace:MF,bold:true,color:isRec?P.cream:P.white});
+      txt(s,desc.split('.')[0]+'.',7.32,1.68+i*1.38,5.2,0.62,{fontSize:8.5,fontFace:BF,color:P.sky,lineSpacingMultiple:1.4});
     });
-    footer(s);s.addNotes(C.speakerNotes?.product||`Lead with ${recP}. Mention other products for breadth. Secondary: ${C.recommendedProduct?.secondary}.`);
+
+    footer(s);
+    s.addNotes(C.speakerNotes?.product||`Lead with ${recP}. Explain the why before showing the what.`);
   }
 
-  // ══ SLIDE 7 — INTEGRATION ══
+  // ════════════════════════════════════
+  //  S8 — PRICING MODEL (WHY)
+  // ════════════════════════════════════
   {
-    const s=pres.addSlide();s.background={color:B.white};logo(s);
-    eyebrow(s,'INTEGRATION & ONBOARDING');
-    const recI=C.recommendedIntegration?.primary||'Server-to-Server (S2S)';
-    h1(s,`Recommended: ${recI}`,0.5,1.05,9,0.75);
-    body(s,C.recommendedIntegration?.rationale||'',0.5,1.9,W-1,0.72);
-    Object.entries(TCJ.integrations).forEach(([name,desc],i)=>{
-      const isR=name.toLowerCase().includes(recI.toLowerCase().split(' ')[0].toLowerCase());
-      s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:2.85+i*0.73,w:W-1,h:0.62,fill:{color:isR?B.blueBg:B.offwhite},line:{color:isR?B.blue:B.lgray,width:isR?1.5:0.75}});
-      if(isR)s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:2.85+i*0.73,w:0.08,h:0.62,fill:{color:B.blue},line:{color:B.blue,width:0}});
-      s.addText(name,{x:0.72,y:2.93+i*0.73,w:3.1,h:0.38,fontSize:10.5,fontFace:'Arial',bold:true,color:isR?B.blue:B.dark,margin:0});
-      s.addText(desc.split('.')[0]+'.',{x:3.98,y:2.93+i*0.73,w:8.5,h:0.38,fontSize:9.5,fontFace:'Arial',color:B.gray,margin:0});
-      if(isR)s.addText('★ Recommended',{x:11.2,y:2.93+i*0.73,w:1.6,h:0.3,fontSize:8,fontFace:'Arial',bold:true,color:B.blue,align:'right',margin:0});
-    });
-    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:7.12,w:W-1,h:0.22,fill:{color:B.teal},line:{color:B.teal,width:0}});
-    s.addText(`Estimated go-live: ${C.recommendedIntegration?.timeline||'2–3 weeks'} · Dedicated integration support included`,{x:0.7,y:7.14,w:W-1.4,h:0.18,fontSize:9,fontFace:'Arial',color:B.white,margin:0});
-    footer(s);s.addNotes(C.speakerNotes?.integration||'Walk through the recommended integration. Emphasise go-live speed — fast time-to-value is a key differentiator vs competitors.');
-  }
+    const s = pres.addSlide();
+    s.background = {color: P.white};
+    logo(s);
 
-  // ══ SLIDE 8 — PRICING ══
-  {
-    const s=pres.addSlide();s.background={color:B.white};logo(s);
-    splitLeft(s,B.burg);
-    s.addText('PRICING\nMODELS',{x:0.45,y:0.82,w:4.9,h:1.85,fontSize:38,fontFace:'Arial',bold:true,color:B.white,lineSpacingMultiple:1.06,margin:0});
-    const recM=C.recommendedPricing?.model||'PoS';
-    s.addShape(pres.shapes.RECTANGLE,{x:0.45,y:3.55,w:4.9,h:0.52,fill:{color:B.white},line:{color:B.white,width:0}});
-    s.addText(`Recommended for ${cn}`,{x:0.62,y:3.62,w:4.5,h:0.3,fontSize:8.5,fontFace:'Arial',color:B.burg,bold:true,margin:0});
-    s.addText(recM,{x:0.45,y:4.18,w:4.9,h:0.68,fontSize:32,fontFace:'Arial',bold:true,color:B.white,margin:0});
-    body(s,C.recommendedPricing?.rationale||'',0.45,4.98,4.9,1.05,B.white);
+    // Left burg panel
+    darkPanel(s,0,0,5.3,H,P.burg);
+    motif(s,0,H,P.white);
+    logoWhite(s,0.45,0.28);
+    txt(s,'PRICING\nMODEL',0.45,1.0,4.6,1.85,{fontSize:38,fontFace:MF,bold:true,color:P.white,lineSpacingMultiple:1.05});
+
+    const recM = C.recommendedPricing?.model||'PoS';
+    rect(s,0.45,3.0,4.4,0.56,P.white);
+    txt(s,'RECOMMENDED FOR YOU',0.62,3.07,4.1,0.3,{fontSize:7,fontFace:MF,bold:true,charSpacing:3,color:P.burg});
+    txt(s,recM,0.45,3.65,4.6,0.68,{fontSize:34,fontFace:MF,bold:true,color:P.white});
+    body(s,C.recommendedPricing?.rationale||'',0.45,4.45,4.5,1.0,P.white,9.5);
+
+    // Why NOT the alternative
+    rect(s,0.45,5.58,4.4,0.58,P.burg,P.white,0.75);
+    txt(s,C.recommendedPricing?.vsAlternative||'',0.62,5.68,4.1,0.42,{fontSize:8.5,fontFace:BF,italic:true,color:P.cream});
+
+    // Right — model cards
+    eyebrow(s,'All Pricing Models',5.55,0.68,P.burg);
     Object.entries(TCJ.pricingModels).forEach(([name,desc],i)=>{
-      const isR=name.includes(recM.split(' ')[0]);
-      s.addShape(pres.shapes.RECTANGLE,{x:5.8,y:0.55+i*1.68,w:7.03,h:1.55,fill:{color:isR?B.burgBg:B.offwhite},line:{color:isR?B.burg:B.lgray,width:isR?1.5:0.75}});
-      s.addText(name.split('(')[0].trim(),{x:6.0,y:0.7+i*1.68,w:5,h:0.42,fontSize:12.5,fontFace:'Arial',bold:true,color:isR?B.burg:B.dark,margin:0});
-      s.addText(desc,{x:6.0,y:1.15+i*1.68,w:6.6,h:0.88,fontSize:9,fontFace:'Arial',color:B.gray,lineSpacingMultiple:1.45,margin:0});
-      if(isR)s.addText('★ Recommended',{x:11.2,y:0.7+i*1.68,w:1.5,h:0.3,fontSize:7.5,fontFace:'Arial',bold:true,color:B.burg,align:'right',margin:0});
+      const isRec = name.split('(')[0].trim()===recM||name.includes(recM);
+      rect(s,5.55,1.05+i*1.62,7.2,1.45,isRec?'FFF5F2':P.offwhite,isRec?P.burg:P.lgray,isRec?1.5:0.75);
+      if(isRec) accentBar(s,5.55,1.05+i*1.62,1.45,P.burg);
+      txt(s,name.split('(')[0].trim(),5.72,1.18+i*1.62,5,0.4,{fontSize:12,fontFace:MF,bold:true,color:isRec?P.burg:P.dark});
+      txt(s,desc,5.72,1.6+i*1.62,6.85,0.82,{fontSize:8.5,fontFace:BF,color:P.gray,lineSpacingMultiple:1.4});
+      if(isRec) txt(s,'\u2605 Recommended',11.5,1.18+i*1.62,1.2,0.3,{fontSize:7,fontFace:MF,bold:true,color:P.burg,align:'right'});
     });
-    s.addShape(pres.shapes.RECTANGLE,{x:5.8,y:7.1,w:7.03,h:0.25,fill:{color:B.burg},line:{color:B.burg,width:0}});
-    s.addText(`Commission: ${C.recommendedPricing?.commissionRange||'5–10%'} · Est. ROAS: ${C.recommendedPricing?.estimatedROAS||'4x+ in 90 days'}`,{x:6.0,y:7.12,w:6.6,h:0.2,fontSize:8.5,fontFace:'Arial',bold:true,color:B.white,margin:0});
-    footer(s);s.addNotes(C.speakerNotes?.pricing||'Lead with ROAS — this is a returns conversation, not a cost conversation. PoS = zero media risk. Be ready to discuss blended models.');
+
+    // Summary strip
+    rect(s,5.55,6.82,7.2,0.32,P.burg);
+    txt(s,`Commission: ${C.recommendedPricing?.commissionRange||'5\u201310%'}   \u00b7   Est. ROAS: ${C.recommendedPricing?.estimatedROAS||'4x+ in 90 days'}   \u00b7   ${C.recommendedPricing?.riskProfile||'Zero risk on PoS'}`,5.72,6.86,6.85,0.24,{fontSize:8,fontFace:MF,bold:true,color:P.white});
+
+    footer(s);
+    s.addNotes(C.speakerNotes?.pricing||'Lead with ROAS. This is a returns conversation, not a cost conversation.');
   }
 
-  // ══ SLIDE 9 — NEXT STEPS ══
+  // ════════════════════════════════════
+  //  S9 — PUBLISHER STRATEGY
+  // ════════════════════════════════════
   {
-    const s=pres.addSlide();s.background={color:B.white};
-    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:W,h:3.42,fill:{color:B.blue},line:{color:B.blue,width:0}});
-    circles(s,W-0.3,0.3,B.white,0.07);
-    logo(s,0.55,0.38);
-    s.addText(`Let's build something\nthat performs.`,{x:0.55,y:0.85,w:7.5,h:2.2,fontSize:36,fontFace:'Arial',bold:true,color:B.white,lineSpacingMultiple:1.06,margin:0});
-    s.addText('PROPOSED NEXT STEPS',{x:0.55,y:3.65,w:8,h:0.28,fontSize:8,fontFace:'Arial',bold:true,charSpacing:3,color:B.orange,margin:0});
-    const steps=C.nextSteps||['Schedule a 45-min discovery call','Share current channel performance data','Receive tailored commercial proposal within 5 business days'];
+    const s = pres.addSlide();
+    s.background = {color: P.white};
+    logo(s);
+    eyebrow(s,'Publisher Activation Strategy');
+
+    H1(s,C.publisherStrategy?.headline||'The right publishers from Day 1.',0.45,1.0,W-0.9,0.72,P.blue,22);
+    body(s,C.publisherStrategy?.body||TCJ.publisherCount,0.45,1.85,W-0.9,0.75);
+
+    // Publisher type grid
+    const types = C.publisherStrategy?.types||['Content','Coupon','Cashback','Comparison'];
+    const colors=[P.blue,P.teal,P.burg,P.orange];
+    types.slice(0,4).forEach((t,i)=>{
+      const col=i%2, row=Math.floor(i/2);
+      const x=0.45+col*6.35, y=2.82+row*1.72;
+      rect(s,x,y,6.15,1.52,colors[i]);
+      motif(s,x+6.15,y+1.52,P.white,2);
+      txt(s,String(i+1).padStart(2,'0'),x+0.18,y+0.14,0.9,0.55,{fontSize:22,fontFace:MF,bold:true,color:'FFFFFF',opacity:30});
+      txt(s,t,x+0.18,y+0.75,5.7,0.55,{fontSize:16,fontFace:MF,bold:true,color:P.white});
+    });
+
+    // Warm network note
+    rect(s,0.45,6.05,W-0.9,0.92,P.offwhite,P.lgray,0.75);
+    accentBar(s,0.45,6.05,0.92,P.teal);
+    txt(s,'15,000+ VETTED PUBLISHERS READY TO ACTIVATE ON DAY 1 \u2014 NO COLD OUTREACH',0.62,6.18,W-1.1,0.28,{fontSize:7.5,fontFace:MF,bold:true,charSpacing:2,color:P.teal});
+    txt(s,TCJ.publisherCount,0.62,6.48,W-1.1,0.38,{fontSize:9,fontFace:BF,color:P.gray});
+
+    footer(s);
+    s.addNotes(C.speakerNotes?.publisher||'Lead with the publisher types most relevant to their category and objectives.');
+  }
+
+  // ════════════════════════════════════
+  //  S10 — CASE STUDY
+  // ════════════════════════════════════
+  {
+    const s = pres.addSlide();
+    s.background = {color: P.blueDark};
+    motif(s,W,0,P.sky);
+    motif(s,0,H,P.sky);
+
+    logoWhite(s);
+    txt(s,'SUCCESS STORY',0.45,0.68,12,0.28,{fontSize:7,fontFace:MF,bold:true,charSpacing:5,color:P.cream});
+
+    const cs = C.caseStudy||{};
+    const clientType = cs.clientType||`A ${R.category||'leading APAC'} brand`;
+
+    txt(s,`How a ${clientType} achieved breakthrough affiliate growth.`,0.45,1.08,9,1.05,{fontSize:24,fontFace:MF,bold:true,color:P.white,lineSpacingMultiple:1.1});
+
+    // 4 story panels
+    const panels=[
+      {label:'THE CHALLENGE',text:cs.challenge||`Struggled to scale digital revenue beyond paid channels in ${(R.recommendedMarkets||['APAC'])[0]}.`,color:P.burg},
+      {label:'THE SOLUTION',text:cs.solution||`Tyroo CJ activated a curated mix of content and cashback publishers on a PoS model with zero media risk.`,color:P.blue},
+      {label:'THE RESULT',text:cs.outcome||`Achieved 3.8x ROAS within 60 days. Affiliate became top-3 revenue channel within 6 months.`,color:P.teal},
+      {label:'THE MARKET',text:cs.market||(R.recommendedMarkets||['India'])[0],color:P.orange},
+    ];
+
+    panels.forEach((p,i)=>{
+      const col=i%2, row=Math.floor(i/2);
+      const x=0.45+col*6.35, y=2.42+row*1.98;
+      rect(s,x,y,6.15,1.78,p.color);
+      txt(s,p.label,x+0.2,y+0.15,5.7,0.28,{fontSize:7,fontFace:MF,bold:true,charSpacing:4,color:'FFFFFF',opacity:65});
+      txt(s,p.text,x+0.2,y+0.52,5.7,1.1,{fontSize:11,fontFace:BF,color:P.white,lineSpacingMultiple:1.5});
+    });
+
+    footer(s,'Confidential · Indicative of typical program outcomes');
+    s.addNotes(C.speakerNotes?.casestudy||'Present this as a comparable brand story. Pause on the outcome stat.');
+  }
+
+  // ════════════════════════════════════
+  //  S11 — AI & TECHNOLOGY EDGE
+  // ════════════════════════════════════
+  {
+    const s = pres.addSlide();
+    s.background = {color: P.white};
+    logo(s);
+    eyebrow(s,'AI & Technology Advantage');
+
+    H1(s,C.aiEdge?.headline||'Smarter performance. Powered by AI.',0.45,1.0,W-0.9,0.72,P.blue,22);
+
+    // AI capabilities
+    const aiPts = C.aiEdge?.points||TCJ.aiCapabilities;
+    aiPts.slice(0,4).forEach((p,i)=>{
+      const col=i%2, row=Math.floor(i/2);
+      const x=0.45+col*6.35, y=2.0+row*1.72;
+      rect(s,x,y,6.15,1.52,P.offwhite,P.lgray,0.75);
+      accentBar(s,x,y,1.52,[P.blue,P.teal,P.orange,P.burg][i]);
+      txt(s,['ML COMMISSION OPT.','PARTNER AI','CONVERSATIONAL AI','FRAUD DETECTION'][i],x+0.18,y+0.12,5.7,0.26,{fontSize:6.5,fontFace:MF,bold:true,charSpacing:3,color:[P.blue,P.teal,P.orange,P.burg][i]});
+      txt(s,p,x+0.18,y+0.46,5.7,0.95,{fontSize:9.5,fontFace:BF,color:P.dark,lineSpacingMultiple:1.5});
+    });
+
+    // CJ tech note
+    rect(s,0.45,5.58,W-0.9,1.1,P.blue);
+    accentBar(s,0.45,5.58,1.1,P.orange);
+    txt(s,'CJ\'S AI ENGINE IS BUILT ON $26B OF AFFILIATE INTELLIGENCE',0.62,5.72,12,0.28,{fontSize:7,fontFace:MF,bold:true,charSpacing:3,color:P.cream});
+    txt(s,'The same technology that powers Fortune 500 affiliate programs globally — now available to your brand in APAC.',0.62,6.02,W-1.1,0.55,{fontSize:9.5,fontFace:BF,color:P.white,lineSpacingMultiple:1.5});
+
+    footer(s);
+    s.addNotes(C.speakerNotes?.ai||'Position the AI angle as a key differentiator vs local affiliate networks.');
+  }
+
+  // ════════════════════════════════════
+  //  S12 — INTEGRATION & ONBOARDING
+  // ════════════════════════════════════
+  {
+    const s = pres.addSlide();
+    s.background = {color: P.white};
+
+    // Left dark panel
+    rect(s,0,0,5.2,H,P.blueDark);
+    motif(s,0,H,P.white);
+    logoWhite(s,0.45,0.35);
+
+    txt(s,'INTEGRATION &\nONBOARDING',0.45,0.95,4.5,1.4,{fontSize:22,fontFace:MF,bold:true,color:P.white,lineSpacingMultiple:1.08});
+
+    const recI = C.recommendedIntegration?.primary||'Server-to-Server (S2S)';
+    rect(s,0.45,2.55,4.3,0.52,P.orange);
+    txt(s,'RECOMMENDED',0.62,2.62,4.0,0.3,{fontSize:7,fontFace:MF,bold:true,charSpacing:4,color:P.white});
+    txt(s,recI,0.45,3.18,4.5,0.52,{fontSize:16,fontFace:MF,bold:true,color:P.cream});
+    body(s,C.recommendedIntegration?.primaryWhy||'',0.45,3.82,4.5,1.0,P.sky,9);
+
+    // Go-live timeline
+    rect(s,0.45,4.98,4.3,0.38,P.teal);
+    txt(s,`Go-live: ${C.recommendedIntegration?.timeline||'2\u20133 weeks'}`,0.62,5.06,4.0,0.22,{fontSize:8.5,fontFace:MF,bold:true,color:P.white});
+    txt(s,`Backup: ${C.recommendedIntegration?.secondary||'JS Pixel Tag'}`,0.45,5.48,4.5,0.28,{fontSize:8.5,fontFace:BF,color:P.sky});
+    txt(s,'Dedicated integration support included',0.45,5.82,4.5,0.28,{fontSize:8.5,fontFace:BF,color:P.sky});
+
+    // Right — Go-live steps
+    eyebrow(s,'GO-LIVE ROADMAP',5.4,0.68,P.orange);
+    const steps = C.recommendedIntegration?.steps||['Technical briefing & tag audit','Integration setup & QA','Publisher activation & launch'];
     steps.forEach((step,i)=>{
-      s.addShape(pres.shapes.OVAL,{x:0.55,y:4.12+i*0.7,w:0.38,h:0.38,fill:{color:B.blue},line:{color:B.blue,width:0}});
-      s.addText(String(i+1),{x:0.55,y:4.12+i*0.7,w:0.38,h:0.38,fontSize:10,fontFace:'Arial',bold:true,color:B.white,align:'center',valign:'middle',margin:0});
-      s.addText(step,{x:1.05,y:4.15+i*0.7,w:7.5,h:0.36,fontSize:11,fontFace:'Arial',color:B.dark,margin:0});
+      rect(s,5.4+i*2.62,1.05,2.45,1.05,P.offwhite,P.lgray,0.75);
+      accentBar(s,5.4+i*2.62,1.05,1.05,[P.blue,P.orange,P.teal][i]);
+      txt(s,`Step ${i+1}`,5.58+i*2.62,1.12,2.2,0.26,{fontSize:7,fontFace:MF,bold:true,charSpacing:2,color:[P.blue,P.orange,P.teal][i]});
+      txt(s,step,5.58+i*2.62,1.42,2.2,0.62,{fontSize:8.5,fontFace:BF,color:P.dark,lineSpacingMultiple:1.4});
     });
-    s.addShape(pres.shapes.RECTANGLE,{x:0.55,y:6.32,w:8.4,h:0.92,fill:{color:B.offwhite},line:{color:B.lgray,width:0.75}});
-    s.addText('WHAT SUCCESS LOOKS LIKE',{x:0.75,y:6.42,w:8,h:0.24,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.blue,margin:0});
-    s.addText(C.caseStudyAngle||`A comparable brand in ${cn}'s category grew affiliate-attributed revenue 3x within 6 months using Tyroo CJ's PoS model.`,{x:0.75,y:6.68,w:8.0,h:0.5,fontSize:9.5,fontFace:'Arial',color:B.gray,lineSpacingMultiple:1.4,margin:0});
-    // contact card
-    s.addShape(pres.shapes.RECTANGLE,{x:9.18,y:0.55,w:3.65,h:6.68,fill:{color:B.teal},line:{color:B.teal,width:0}});
-    circles(s,W-0.15,H-0.15,B.white,0.07);
-    s.addText('GET IN TOUCH',{x:9.38,y:0.78,w:3.2,h:0.28,fontSize:7.5,fontFace:'Arial',bold:true,charSpacing:3,color:B.sky,margin:0});
-    [{t:'Tyroo | CJ',sz:14,bold:true,c:B.white,y:1.22},{t:'Business Development',sz:9.5,bold:false,c:'A6DDEE',y:1.62},{t:'bd@tyroocj.com',sz:9.5,bold:false,c:B.white,y:2.18},{t:'tyroocj.com',sz:9.5,bold:false,c:'A6DDEE',y:2.55},{t:'India · SEA · China',sz:9,bold:false,c:B.sky,y:3.1},{t:'US · EU · APAC',sz:9,bold:false,c:B.sky,y:3.45}].forEach(row=>{
-      s.addText(row.t,{x:9.38,y:row.y,w:3.2,h:0.38,fontSize:row.sz,fontFace:'Arial',bold:row.bold,color:row.c,margin:0});
+
+    // All integrations — right side
+    txt(s,'ALL INTEGRATION OPTIONS',5.4,2.28,7.5,0.28,{fontSize:7,fontFace:MF,bold:true,charSpacing:4,color:P.teal});
+    Object.entries(TCJ.integrations).forEach(([name,desc],i)=>{
+      const isRec = name.toLowerCase().includes(recI.toLowerCase().split(' ')[0].toLowerCase());
+      rect(s,5.4,2.65+i*0.72,7.48,0.62,isRec?'EEF2FF':P.offwhite,isRec?P.blue:P.lgray,isRec?1:0.5);
+      if(isRec) accentBar(s,5.4,2.65+i*0.72,0.62,P.blue);
+      txt(s,name,5.58,2.72+i*0.72,2.8,0.28,{fontSize:8.5,fontFace:MF,bold:true,color:isRec?P.blue:P.dark});
+      txt(s,desc.split('.')[0]+'.',8.45,2.72+i*0.72,4.3,0.28,{fontSize:8,fontFace:BF,color:P.gray});
+      if(isRec) txt(s,'\u2605 Rec',11.6,2.72+i*0.72,1.2,0.26,{fontSize:7,fontFace:MF,bold:true,color:P.blue,align:'right'});
     });
-    footer(s,`Tyroo | CJ × ${cn} · Confidential`);
-    s.addNotes(C.speakerNotes?.nextsteps||'Close with energy. Restate core value: pay only for performance. Book the follow-up before leaving. Leave the deck and contact details.');
+
+    footer(s);
+    s.addNotes(C.speakerNotes?.integration||'Emphasise go-live speed. Fast time-to-value is a key differentiator.');
+  }
+
+  // ════════════════════════════════════
+  //  S13 — NEXT STEPS & CLOSE
+  // ════════════════════════════════════
+  {
+    const s = pres.addSlide();
+    s.background = {color: P.blueDark};
+    motif(s,W-0.2,0.2,P.sky);
+
+    // Top blue band
+    rect(s,0,0,W,3.35,P.blue);
+    logoWhite(s,0.45,0.38);
+    txt(s,'Let\'s build something\nthat performs.',0.45,0.85,8,2.1,{fontSize:36,fontFace:MF,bold:true,color:P.white,lineSpacingMultiple:1.05});
+
+    // Steps
+    txt(s,'PROPOSED NEXT STEPS',0.45,3.58,9,0.28,{fontSize:7,fontFace:MF,bold:true,charSpacing:5,color:P.orange});
+    const steps=C.nextSteps||['Schedule a 45-min discovery call','Share current performance data','Receive tailored commercial proposal in 5 days'];
+    steps.forEach((step,i)=>{
+      s.addShape(pres.shapes.OVAL,{x:0.45,y:4.02+i*0.72,w:0.4,h:0.4,fill:{color:P.orange},line:{type:'none'}});
+      txt(s,String(i+1),0.45,4.02+i*0.72,0.4,0.4,{fontSize:10,fontFace:MF,bold:true,color:P.white,align:'center',valign:'middle'});
+      txt(s,step,0.98,4.06+i*0.72,7.2,0.34,{fontSize:11,fontFace:BF,color:P.white});
+    });
+
+    // Contact card
+    rect(s,9.28,0.55,3.6,6.62,P.teal);
+    motif(s,9.28+3.6,H-0.2,P.white);
+    txt(s,'GET IN TOUCH',9.45,0.75,3.25,0.28,{fontSize:7,fontFace:MF,bold:true,charSpacing:3,color:P.sky});
+    [
+      {t:'Tyroo | CJ',sz:14,bold:true,c:P.white,y:1.2},
+      {t:'Business Development',sz:9,bold:false,c:P.sky,y:1.62},
+      {t:'bd@tyroocj.com',sz:9.5,bold:false,c:P.white,y:2.18},
+      {t:'tyroocj.com',sz:9.5,bold:false,c:P.sky,y:2.55},
+      {t:'India \u00b7 SEA \u00b7 China',sz:9,bold:false,c:P.sky,y:3.1},
+      {t:'US \u00b7 EU \u00b7 APAC',sz:9,bold:false,c:P.sky,y:3.45},
+    ].forEach(row=>{
+      txt(s,row.t,9.45,row.y,3.25,0.38,{fontSize:row.sz,fontFace:BF,bold:row.bold,color:row.c});
+    });
+
+    footer(s,`Tyroo | CJ \u00d7 ${cn} \u00b7 Confidential`);
+    s.addNotes(C.speakerNotes?.nextsteps||'Close with energy. Restate: pay only for performance. Book the follow-up before leaving.');
   }
 
   _dl=async()=>await pres.writeFile({fileName:`TyrooCJ_Pitch_${cn.replace(/\s+/g,'_')}.pptx`});
 
   return [
-    {name:'Cover Slide',desc:`Branded opening — Tyroo CJ × ${cn}`},
-    {name:'About Tyroo | CJ',desc:'Platform overview, CJ global scale & publisher network'},
-    {name:'Market Brief',desc:`Affiliate landscape in ${(R.recommendedMarkets||['APAC']).join(', ')}`},
-    {name:'Client Challenge',desc:`${cn}'s growth challenges & business context`},
-    {name:'Tyroo CJ Solution',desc:'Tailored solution mapped to client needs'},
-    {name:'Products & Capabilities',desc:`${C.recommendedProduct?.primary||'CJ Affiliate'} recommended — full suite overview`},
-    {name:'Integration & Onboarding',desc:`${C.recommendedIntegration?.primary||'S2S'} · Go-live ${C.recommendedIntegration?.timeline||'2–3 weeks'}`},
-    {name:'Pricing Model',desc:`${C.recommendedPricing?.model||'PoS'} · ${C.recommendedPricing?.commissionRange||'5–10%'} · Est. ${C.recommendedPricing?.estimatedROAS||'4x+'} ROAS`},
-    {name:'Next Steps & Close',desc:'Proposed actions, case study angle & contact details'},
+    {name:'Cover',              desc:`Branded opening — Tyroo CJ \u00d7 ${cn}`},
+    {name:'About Tyroo CJ',     desc:'Platform, vision, mission & markets'},
+    {name:'CJ Global Advantage',desc:'Publicis Groupe backing, $26B proof points'},
+    {name:'Market Brief',       desc:`Affiliate landscape in ${(R.recommendedMarkets||['APAC']).join(', ')}`},
+    {name:'Client Challenge',   desc:`${cn}'s growth context & pain points`},
+    {name:'Tyroo CJ Solution',  desc:'Tailored solution mapped to challenges'},
+    {name:'Why These Products', desc:`${C.recommendedProduct?.primary||'CJ Affiliate'} — rationale & benefits`},
+    {name:'Pricing Model',      desc:`${C.recommendedPricing?.model||'PoS'} — why this works, vs alternatives`},
+    {name:'Publisher Strategy', desc:'Activation roadmap by publisher type'},
+    {name:'Case Study',         desc:'Comparable brand success story'},
+    {name:'AI & Tech Edge',     desc:'ML commission optimisation & fraud detection'},
+    {name:'Integration',        desc:`${C.recommendedIntegration?.primary||'S2S'} · ${C.recommendedIntegration?.timeline||'2\u20133 weeks'} go-live`},
+    {name:'Next Steps & Close', desc:'Proposed actions & contact details'},
   ];
 }
+// ─── APOLLO CONTACTS ───
+// Apollo key now comes from ⚙ Settings (browser-only storage)
+let _currentClient = '';
+
+const AFFILIATE_TITLES = [
+  'affiliate', 'partnerships', 'partner', 'performance marketing',
+  'growth marketing', 'digital marketing', 'business development',
+  'alliances', 'channel', 'ecommerce', 'e-commerce'
+];
+
+async function findContacts() {
+  const btn = document.getElementById('findBtn');
+  const content = document.getElementById('contactsContent');
+  const meta = document.getElementById('contactsMeta');
+
+  if (!_currentClient) { return; }
+  if (!APOLLO_API_KEY || APOLLO_API_KEY.startsWith('PASTE_')) { content.innerHTML = '<div class="contacts-empty">⚠ Apollo API key missing — paste it in the API KEYS block at the top of the script in index.html.</div>'; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Searching…';
+  content.innerHTML = '<div class="contacts-loading">🔍 Searching Apollo for affiliate decision makers…</div>';
+
+  try {
+    // Search people at this company with relevant titles
+    const response = await fetch('https://api.apollo.io/v1/mixed_people/search', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+        'X-Api-Key': APOLLO_API_KEY,
+      },
+      body: JSON.stringify({
+        q_organization_name: _currentClient,
+        q_person_title: AFFILIATE_TITLES.join(','),
+        page: 1,
+        per_page: 8,
+      })
+    });
+
+    const data = await response.json();
+    const people = data.people || [];
+
+    if (!people.length) {
+      // Fallback — broader search
+      const r2 = await fetch('https://api.apollo.io/v1/mixed_people/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache', 'X-Api-Key': APOLLO_API_KEY },
+        body: JSON.stringify({
+          q_organization_name: _currentClient,
+          q_person_title: 'marketing,growth,digital',
+          page: 1,
+          per_page: 6,
+        })
+      });
+      const d2 = await r2.json();
+      renderContacts(d2.people || [], true);
+    } else {
+      renderContacts(people, false);
+    }
+
+    meta.textContent = `${_currentClient} · Affiliate & Growth decision makers`;
+
+  } catch(e) {
+    content.innerHTML = `<div class="contacts-empty">⚠ Could not fetch contacts. Check Apollo API key.<br><small>${e.message}</small></div>`;
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Find Contacts';
+}
+
+function renderContacts(people, isBroadSearch) {
+  const content = document.getElementById('contactsContent');
+  if (!people.length) {
+    content.innerHTML = `
+      <div class="contacts-empty">No contacts found for "${_currentClient}"</div>
+      <div class="no-results-tip">
+        💡 Try searching manually on LinkedIn for: <strong>${_currentClient} affiliate manager</strong> or <strong>${_currentClient} partnerships lead</strong>
+      </div>`;
+    return;
+  }
+
+  const rows = people.map(p => {
+    const initials = (p.first_name?.[0]||'') + (p.last_name?.[0]||'');
+    const email = p.email && p.email !== 'email_not_found@example.com' ? p.email : null;
+    const phone = p.phone_numbers?.[0]?.sanitized_number;
+    const linkedin = p.linkedin_url;
+    const title = p.title || 'Unknown Title';
+    const company = p.organization?.name || _currentClient;
+
+    const emailBtn = email
+      ? `<a class="contact-btn email" href="mailto:${email}" title="${email}">✉ Email</a>`
+      : '';
+    const linkedinBtn = linkedin
+      ? `<a class="contact-btn linkedin" href="${linkedin}" target="_blank">in LinkedIn</a>`
+      : '';
+    const phoneBtn = phone
+      ? `<a class="contact-btn phone" href="tel:${phone}" title="${phone}">📞 Call</a>`
+      : '';
+
+    return `
+      <div class="contact-row">
+        <div class="contact-avatar">${initials}</div>
+        <div class="contact-info">
+          <div class="contact-name">${p.first_name||''} ${p.last_name||''}</div>
+          <div class="contact-title">${title}</div>
+          <div class="contact-company">${company}</div>
+        </div>
+        <div class="contact-actions">
+          ${emailBtn}${linkedinBtn}${phoneBtn}
+        </div>
+      </div>`;
+  }).join('');
+
+  content.innerHTML = `
+    <div class="contacts-grid">${rows}</div>
+    ${isBroadSearch ? '<div class="no-results-tip">⚠ No exact affiliate contacts found — showing broader marketing & growth contacts instead.</div>' : ''}
+  `;
+}
+
+function showContactsPanel(clientName) {
+  _currentClient = clientName;
+  document.getElementById('contactsWrap').classList.add('open');
+}
+
+// ─── INIT ALL DOM-DEPENDENT FUNCTIONS ───
+document.addEventListener('DOMContentLoaded', function() {
+  initObjectives();
+  initGeos();
+  initAutocomplete();
+  detectLocation();
+  document.getElementById('clientInput').addEventListener('keydown', e => {
+    if(e.key === 'Enter') handleGenerate();
+  });
+});
+
 </script>
 </body>
 </html>
