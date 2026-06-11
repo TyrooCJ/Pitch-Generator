@@ -311,30 +311,31 @@ footer strong{color:var(--blue);font-family:'Montserrat',sans-serif;font-weight:
 // ─── BRAND PALETTE (exact from brand book) ───
 
 // ═══════════════════════════════════════════════════════
-// API KEYS — paste your keys between the quotes below
+// PROXY URL — your Cloudflare Worker (holds all API keys
+// as server-side secrets; nothing secret lives in this file)
 // ═══════════════════════════════════════════════════════
-const ANTHROPIC_API_KEY = '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';   // sk-ant-api03-…  (console.anthropic.com)
-const TAVILY_API_KEY    = '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';      // tvly-…          (app.tavily.com)
-const APOLLO_API_KEY    = '4NGJiwV4SeVLVdXZAO04cA';      // Apollo.io key   (for contacts finder)
+const PROXY_URL = 'https://tyroo-pitch-proxy.strategy-2c7.workers.dev'; // ← paste your worker URL, no trailing slash
 // ═══════════════════════════════════════════════════════
 
-// ─── TAVILY — live internet research ───
-async function tavilySearch(query, maxResults=5){
-  const r=await fetch('https://api.tavily.com/search',{
+async function callProxy(path, payload){
+  if(PROXY_URL.includes('YOUR-SUBDOMAIN')){
+    throw new Error('Proxy not configured — deploy worker.js on Cloudflare and paste its URL into PROXY_URL at the top of the script.');
+  }
+  const r=await fetch(PROXY_URL+path,{
     method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'Authorization':'Bearer '+TAVILY_API_KEY
-    },
-    body:JSON.stringify({
-      query,
-      search_depth:'advanced',
-      max_results:maxResults,
-      include_answer:true
-    })
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
   });
-  if(!r.ok){ const t=await r.text(); throw new Error('Tavily error '+r.status+': '+t.slice(0,120)); }
-  const d=await r.json();
+  let d=null;
+  try{ d=await r.json(); }catch(_e){}
+  if(!r.ok) throw new Error((d&&d.error)||'Proxy error '+r.status);
+  if(d&&d.error) throw new Error(d.error);
+  return d;
+}
+
+// ─── TAVILY — live internet research (via proxy) ───
+async function tavilySearch(query, maxResults=5){
+  const d=await callProxy('/tavily',{query, max_results:maxResults});
   const lines=[];
   if(d.answer) lines.push('Summary: '+d.answer);
   (d.results||[]).forEach(res=>lines.push('- '+res.title+': '+String(res.content||'').slice(0,300)));
@@ -355,36 +356,9 @@ async function tavilyResearch(cn){
   }
 }
 
-// ─── CLAUDE — direct browser → Anthropic API (no server needed) ───
+// ─── CLAUDE — via proxy (key stays server-side) ───
 async function callClaude(systemPrompt, userPrompt, maxTokens=3500){
-  if(!ANTHROPIC_API_KEY || ANTHROPIC_API_KEY.startsWith('PASTE_')){
-    throw new Error('Anthropic API key missing — open index.html and paste it in the API KEYS block at the top of the script.');
-  }
-  const r=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'x-api-key':ANTHROPIC_API_KEY,
-      'anthropic-version':'2023-06-01',
-      'anthropic-dangerous-direct-browser-access':'true'
-    },
-    body:JSON.stringify({
-      model:'claude-sonnet-4-6',
-      max_tokens:maxTokens,
-      system:systemPrompt,
-      messages:[{role:'user',content:userPrompt}]
-    })
-  });
-  if(r.status===401||r.status===403){ throw new Error('Anthropic API key invalid or unauthorised — check the key pasted in the code.'); }
-  if(!r.ok){
-    let msg='API error '+r.status;
-    try{ const e=await r.json(); msg=e?.error?.message||msg; }catch(_e){}
-    throw new Error(msg);
-  }
-  const d=await r.json();
-  const blocks=(d.content||[]).filter(b=>b.type==='text').map(b=>b.text);
-  const text=blocks.join('\n');
-  return { text, stop_reason:d.stop_reason };
+  return await callProxy('/claude',{systemPrompt, userPrompt, maxTokens});
 }
 const B={
   blue:'214295',teal:'025450',orange:'F97316',burg:'6E1B35',
@@ -1583,7 +1557,6 @@ async function findContacts() {
   const meta = document.getElementById('contactsMeta');
 
   if (!_currentClient) { return; }
-  if (!APOLLO_API_KEY || APOLLO_API_KEY.startsWith('PASTE_')) { content.innerHTML = '<div class="contacts-empty">⚠ Apollo API key missing — paste it in the API KEYS block at the top of the script in index.html.</div>'; return; }
 
   btn.disabled = true;
   btn.innerHTML = '⏳ Searching…';
@@ -1591,37 +1564,22 @@ async function findContacts() {
 
   try {
     // Search people at this company with relevant titles
-    const response = await fetch('https://api.apollo.io/v1/mixed_people/search', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache',
-        'X-Api-Key': APOLLO_API_KEY,
-      },
-      body: JSON.stringify({
-        q_organization_name: _currentClient,
-        q_person_title: AFFILIATE_TITLES.join(','),
-        page: 1,
-        per_page: 8,
-      })
+    const data = await callProxy('/apollo', {
+      q_organization_name: _currentClient,
+      q_person_title: AFFILIATE_TITLES.join(','),
+      page: 1,
+      per_page: 8,
     });
-
-    const data = await response.json();
     const people = data.people || [];
 
     if (!people.length) {
       // Fallback — broader search
-      const r2 = await fetch('https://api.apollo.io/v1/mixed_people/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache', 'X-Api-Key': APOLLO_API_KEY },
-        body: JSON.stringify({
-          q_organization_name: _currentClient,
-          q_person_title: 'marketing,growth,digital',
-          page: 1,
-          per_page: 6,
-        })
+      const d2 = await callProxy('/apollo', {
+        q_organization_name: _currentClient,
+        q_person_title: 'marketing,growth,digital',
+        page: 1,
+        per_page: 6,
       });
-      const d2 = await r2.json();
       renderContacts(d2.people || [], true);
     } else {
       renderContacts(people, false);
