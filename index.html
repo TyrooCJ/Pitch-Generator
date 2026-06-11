@@ -838,29 +838,65 @@ Return ONLY valid JSON, no markdown, no extra text:
 
   const res = await callClaude(sys,
     `Client: "${cn}". ${objCtx} ${cbCtx} ${locCtx}${webCtx} Ground the pitch in the live web research above where available. Output ONLY the JSON object.`,
-    3000
+    6000
   );
 
   if(res.error) throw new Error(res.error);
   let text = res.text || '';
 
-  // Handle truncation
-  if(res.stop_reason === 'max_tokens'){
-    const lb = text.lastIndexOf('}');
-    if(lb > 0) text = text.slice(0, lb+1);
+  // Repairs truncated JSON: trims to last complete value, closes open strings/brackets
+  function repairJson(raw){
+    const s0 = raw.indexOf('{');
+    if(s0 < 0) return null;
+    let s = raw.slice(s0);
+    const stack = [];
+    let inStr = false, esc = false, lastSafe = 0;
+    for(let i=0;i<s.length;i++){
+      const ch = s[i];
+      if(esc){ esc=false; continue; }
+      if(ch === '\\'){ if(inStr) esc=true; continue; }
+      if(ch === '"'){ inStr = !inStr; continue; }
+      if(inStr) continue;
+      if(ch === '{' || ch === '[') stack.push(ch);
+      else if(ch === '}' || ch === ']'){ stack.pop(); lastSafe = i; }
+      else if(ch === ',') lastSafe = i - 1;
+    }
+    if(stack.length === 0 && !inStr) return s; // already complete
+    // cut back to the last structurally safe point, then close everything still open
+    let t = s.slice(0, lastSafe + 1).replace(/,\s*$/, '');
+    // recompute open brackets on the trimmed text
+    const open = [];
+    inStr = false; esc = false;
+    for(let i=0;i<t.length;i++){
+      const ch = t[i];
+      if(esc){ esc=false; continue; }
+      if(ch === '\\'){ if(inStr) esc=true; continue; }
+      if(ch === '"'){ inStr = !inStr; continue; }
+      if(inStr) continue;
+      if(ch === '{' || ch === '[') open.push(ch);
+      else if(ch === '}' || ch === ']') open.pop();
+    }
+    if(inStr) t += '"';
+    while(open.length) t += (open.pop() === '{' ? '}' : ']');
+    return t;
   }
 
   // Parse JSON
   let parsed = null;
   const attempts = [
-    () => { const m=text.match(/\{[\s\S]*\}/); return m ? JSON.parse(m[0]) : null; },
     () => { const m=text.match(/```json\s*([\s\S]*?)\s*```/); return m ? JSON.parse(m[1]) : null; },
+    () => { const m=text.match(/\{[\s\S]*\}/); return m ? JSON.parse(m[0]) : null; },
     () => JSON.parse(text.trim()),
+    () => { const r=repairJson(text); return r ? JSON.parse(r) : null; },
   ];
   for(const fn of attempts){
     try { parsed = fn(); if(parsed) break; } catch(e){}
   }
-  if(!parsed) throw new Error('Content generation failed. Please try again.');
+  if(!parsed){
+    console.error('PITCH STUDIO DEBUG — stop_reason:', res.stop_reason);
+    console.error('PITCH STUDIO DEBUG — raw model output:\n', text);
+    throw new Error('Content generation failed (stop: '+(res.stop_reason||'?')+'). Raw output logged to console — press F12 and share it.');
+  }
 
   // Return both R and C shaped correctly for buildPptx
   const R = parsed.research || {};
